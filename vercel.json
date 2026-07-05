@@ -12,19 +12,22 @@
       "src": "backend/src/server.js",
       "use": "@vercel/node"
     }
-  ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/backend/src/server.js"
+      "src": "/api/(.*)",
+      "dest": "/backend/src/server.js"
     },
     {
-      "source": "/uploads/(.*)",
-      "destination": "/backend/src/server.js"
+      "src": "/uploads/(.*)",
+      "dest": "/backend/src/server.js"
     },
     {
-      "source": "/(.*)",
-      "destination": "/frontend/dist/$1"
+      "src": "/(assets/.*|.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|webp|json))",
+      "dest": "/frontend/dist/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/dist/index.html"
     }
   ]
 }
