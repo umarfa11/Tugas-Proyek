@@ -45,6 +45,9 @@ const InputPesanan = () => {
   // Receipt
   const [strukData, setStrukData] = useState(null);
   const [isStrukOpen, setIsStrukOpen] = useState(false);
+  
+  // Mobile Cart Drawer
+  const [isCartMobileOpen, setIsCartMobileOpen] = useState(false);
 
   // Fetch products
   useEffect(() => {
@@ -184,7 +187,7 @@ const InputPesanan = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row lg:h-[calc(100vh-6rem)] gap-6">
+    <div className="flex flex-col lg:flex-row h-[calc(100vh-6rem)] lg:gap-6 relative">
       {/* ===== LEFT: Product Grid ===== */}
       <div className="flex-1 flex flex-col min-w-0">
         <div className="mb-6">
@@ -220,7 +223,7 @@ const InputPesanan = () => {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto pr-2 pb-6">
+        <div className="flex-1 overflow-y-auto pr-2 pb-32 lg:pb-6 scrollbar-hide">
           {isLoadingProduk ? (
             <div className="flex flex-col items-center justify-center h-64">
               <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4" />
@@ -300,9 +303,43 @@ const InputPesanan = () => {
         </div>
       </div>
 
+      {/* Mobile Floating Cart Button */}
+      <div className="lg:hidden fixed bottom-20 left-4 right-4 z-40">
+        <button 
+          onClick={() => setIsCartMobileOpen(true)}
+          className="w-full bg-gradient-to-r from-primary to-rose-400 text-white p-3.5 rounded-2xl shadow-xl shadow-primary/30 flex items-center justify-between active:scale-95 transition-transform"
+        >
+          <div className="flex items-center gap-3">
+            <div className="bg-white/20 p-2 rounded-xl">
+              <ShoppingCart size={20} />
+            </div>
+            <div className="text-left leading-tight">
+              <p className="text-[10px] font-medium text-white/80">Keranjang</p>
+              <p className="font-bold text-sm">{cart.reduce((s, i) => s + i.jumlah, 0)} Item</p>
+            </div>
+          </div>
+          <div className="text-right flex items-center gap-2">
+            <span className="font-black text-lg">{formatRupiah(totalHarga)}</span>
+            <ArrowRight size={18} />
+          </div>
+        </button>
+      </div>
+
       {/* ===== RIGHT: Digital Receipt Cart ===== */}
-      <div id="cart-section" className="w-full lg:w-96 lg:min-w-[384px] shrink-0 bg-gradient-to-br from-white to-gray-50/80 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border border-gray-100 mt-4 lg:mt-0">
-        
+      <div 
+        id="cart-section" 
+        className={`fixed inset-y-0 right-0 z-50 w-full sm:w-[400px] bg-white shadow-2xl flex flex-col transition-transform duration-300 
+          ${isCartMobileOpen ? 'translate-x-0' : 'translate-x-full'}
+          lg:relative lg:translate-x-0 lg:w-96 lg:min-w-[384px] lg:bg-gradient-to-br lg:from-white lg:to-gray-50/80 lg:rounded-2xl lg:shadow-sm lg:border lg:border-gray-100 lg:z-auto
+        `}
+      >
+        {/* Mobile Close Button */}
+        <button 
+          onClick={() => setIsCartMobileOpen(false)} 
+          className="lg:hidden absolute top-4 right-4 p-2.5 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 z-10"
+        >
+          <X size={20} />
+        </button>
         {/* Cart Header */}
         <div className="px-5 py-4 text-center border-b border-gray-100">
           <div className="inline-flex items-center justify-center w-10 h-10 bg-primary/10 rounded-xl text-primary mb-2">
