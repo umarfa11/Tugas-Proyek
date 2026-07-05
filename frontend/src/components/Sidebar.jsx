@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 
-const Sidebar = ({ isOpen, onClose }) => {
+const Sidebar = () => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
 
@@ -39,28 +39,18 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const links = user?.role === 'super_admin' ? adminLinks : kasirLinks;
 
-  const linkBaseClass = "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200";
-  const activeLinkClass = "bg-primary/10 text-primary shadow-sm";
-  const inactiveLinkClass = "text-gray-500 hover:bg-gray-100 hover:text-gray-700";
+  const linkBaseClass = "flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1 lg:gap-3 px-2 lg:px-4 py-2 lg:py-3 min-w-[72px] lg:min-w-0 rounded-xl text-[10px] lg:text-sm font-medium transition-all duration-200";
+  const activeLinkClass = "text-primary lg:bg-primary/10 lg:shadow-sm";
+  const inactiveLinkClass = "text-gray-400 lg:text-gray-500 hover:text-gray-700 lg:hover:bg-gray-100";
 
   return (
     <>
-      {/* Mobile Overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
-          onClick={onClose}
-        />
-      )}
-
-      {/* Sidebar */}
+      {/* Sidebar / Bottom Nav */}
       <aside 
-        className={`fixed left-0 top-0 h-dvh w-64 bg-white border-r border-gray-100 flex flex-col z-40 shadow-sm transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className="fixed bottom-0 lg:top-0 left-0 w-full lg:w-64 h-[64px] lg:h-dvh bg-white border-t lg:border-t-0 lg:border-r border-gray-100 flex flex-row lg:flex-col z-50 lg:z-40 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] lg:shadow-sm overflow-x-auto lg:overflow-x-visible overflow-y-visible"
       >
-      {/* Brand */}
-      <div className="px-6 py-6 border-b border-gray-100">
+      {/* Brand - Desktop Only */}
+      <div className="hidden lg:block px-6 py-6 border-b border-gray-100">
         <div className="flex items-center gap-3">
           <div className="bg-primary/10 p-2.5 rounded-xl">
             <ChefHat size={24} className="text-primary" />
@@ -73,7 +63,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
+      <nav className="flex-1 flex flex-row lg:flex-col items-center lg:items-stretch overflow-x-auto lg:overflow-y-auto px-2 lg:p-4 gap-2 lg:space-y-1.5 scrollbar-hide">
         {links.map((link) => (
           <NavLink
             key={link.to}
@@ -83,14 +73,23 @@ const Sidebar = ({ isOpen, onClose }) => {
               `${linkBaseClass} ${isActive ? activeLinkClass : inactiveLinkClass}`
             }
           >
-            <link.icon size={20} />
-            <span>{link.label}</span>
+            <link.icon className="w-5 h-5 lg:w-5 lg:h-5 shrink-0" />
+            <span className="whitespace-nowrap">{link.label}</span>
           </NavLink>
         ))}
+
+        {/* Logout - Mobile Only */}
+        <button 
+          onClick={handleLogout}
+          className="lg:hidden flex flex-col items-center justify-center min-w-[72px] gap-1 px-2 py-2 text-[10px] font-medium text-red-500 hover:text-red-600 transition-colors"
+        >
+          <LogOut className="w-5 h-5 shrink-0" />
+          <span>Keluar</span>
+        </button>
       </nav>
 
-      {/* User Info & Logout */}
-      <div className="p-4 pb-8 sm:pb-4 border-t border-gray-100">
+      {/* User Info & Logout - Desktop Only */}
+      <div className="hidden lg:block p-4 pb-8 sm:pb-4 border-t border-gray-100">
         <div className="flex items-center gap-3 px-3 mb-3">
           <div className="w-9 h-9 rounded-full bg-secondary/20 flex items-center justify-center">
             <span className="text-secondary font-bold text-sm">
