@@ -238,24 +238,24 @@ const RiwayatPenjualan = () => {
           </Button>
         </div>
 
-        <div className="flex flex-wrap items-end gap-3">
-          <div className="flex-1 min-w-[200px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+          <div className="sm:col-span-2 lg:col-span-2">
             <Input icon={Search} placeholder="Cari nama pembeli / no. antrian..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
           <div>
             <label className="text-xs font-medium text-gray-500 mb-1 block">Dari Tanggal</label>
             <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
-              className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20" />
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20" />
           </div>
           <div>
             <label className="text-xs font-medium text-gray-500 mb-1 block">Sampai Tanggal</label>
             <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
-              className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20" />
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20" />
           </div>
           <div>
             <label className="text-xs font-medium text-gray-500 mb-1 block">Metode</label>
             <select value={filterMetode} onChange={(e) => setFilterMetode(e.target.value)}
-              className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 bg-white">
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 bg-white">
               <option value="">Semua</option>
               <option value="tunai">Tunai</option>
               <option value="qris">QRIS</option>
@@ -268,7 +268,7 @@ const RiwayatPenjualan = () => {
             icon={Download} 
             onClick={exportToExcel}
             disabled={filteredRiwayat.length === 0}
-            className="ml-auto text-green-600 border-green-200 hover:bg-green-50 hover:border-green-300"
+            className="w-full sm:col-span-2 lg:col-span-5 text-green-600 border-green-200 hover:bg-green-50 hover:border-green-300 mt-1"
           >
             Export Excel
           </Button>
@@ -291,20 +291,20 @@ const RiwayatPenjualan = () => {
             {paginatedRiwayat.map((item) => (
               <div key={item.id}>
                 {/* Row */}
-                <div className="flex items-center px-6 py-4 hover:bg-gray-50/50 transition-colors">
+                <div className="flex flex-wrap sm:flex-nowrap items-center px-4 sm:px-6 py-4 hover:bg-gray-50/50 transition-colors gap-y-3">
                   {/* Queue number */}
-                  <div className="w-14 h-14 rounded-xl bg-gray-50 flex flex-col items-center justify-center mr-4 shrink-0">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gray-50 flex flex-col items-center justify-center mr-3 sm:mr-4 shrink-0">
                     <span className="text-[9px] text-gray-400 uppercase">No.</span>
-                    <span className="text-lg font-bold text-dark">{item.nomorAntrian}</span>
+                    <span className="text-base sm:text-lg font-bold text-dark">{item.nomorAntrian}</span>
                   </div>
 
                   {/* Info */}
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-[200px]">
                     <div className="flex items-center gap-2 mb-0.5">
                       <User size={14} className="text-gray-400" />
                       <span className="font-semibold text-dark text-sm">{item.namaPembeli}</span>
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-gray-400">
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-400 mt-1 sm:mt-0">
                       <span className="flex items-center gap-1">
                         <Clock size={12} /> {formatDate(item.completedAt)}
                       </span>
@@ -317,35 +317,38 @@ const RiwayatPenjualan = () => {
                         {item.pembayaran?.metodeBayar?.toUpperCase()}
                       </span>
                       {item.user && (
-                        <span className="text-gray-300">Kasir: {item.user.nama}</span>
+                        <span className="text-gray-300 flex items-center gap-1">
+                          Kasir: {item.user.nama}
+                        </span>
                       )}
                     </div>
                   </div>
 
-                  {/* Total */}
-                  <div className="text-right mr-4">
-                    <p className="font-bold text-dark">{formatRupiah(item.totalHarga)}</p>
-                    <span className="inline-flex items-center px-2 py-0.5 bg-green-50 text-green-600 text-[10px] font-semibold rounded-full">
-                      <CheckCircle2 size={10} className="mr-1" /> Selesai
-                    </span>
-                  </div>
+                  {/* Total and Actions grouping for Mobile/Desktop */}
+                  <div className="w-full sm:w-auto flex items-center justify-between sm:justify-end ml-[3.25rem] sm:ml-0 pl-1 sm:pl-0 border-t sm:border-0 border-gray-100 pt-3 sm:pt-0">
+                    <div className="text-left sm:text-right mr-4">
+                      <p className="font-bold text-dark">{formatRupiah(item.totalHarga)}</p>
+                      <span className="inline-flex items-center px-2 py-0.5 bg-green-50 text-green-600 text-[10px] font-semibold rounded-full mt-0.5">
+                        <CheckCircle2 size={10} className="mr-1" /> Selesai
+                      </span>
+                    </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      onClick={() => handleToggleDetail(item.id)}
-                      className="p-2 rounded-lg text-gray-400 hover:text-secondary hover:bg-secondary/10 transition-colors"
-                      title="Detail"
-                    >
-                      {expandedId === item.id ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </button>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        onClick={() => handleToggleDetail(item.id)}
+                        className="p-2 rounded-lg text-gray-400 hover:text-secondary hover:bg-secondary/10 transition-colors"
+                        title="Detail"
+                      >
+                        {expandedId === item.id ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
                   </div>
                 </div>
 
                 {/* Expandable Detail */}
                 {expandedId === item.id && detailData && (
-                  <div className="px-6 pb-4">
-                    <div className="bg-gray-50 rounded-xl p-4 ml-[72px]">
+                  <div className="px-4 sm:px-6 pb-4">
+                    <div className="bg-gray-50 rounded-xl p-3 sm:p-4 sm:ml-[72px]">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Detail Item</p>
                       <div className="space-y-2">
                         {detailData.detailPesanan?.map((detail, idx) => (
@@ -376,11 +379,11 @@ const RiwayatPenjualan = () => {
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between bg-white px-4 py-3 border border-gray-100 rounded-2xl mt-4 shadow-sm">
-          <div className="text-sm text-gray-500">
+        <div className="flex flex-col sm:flex-row items-center justify-between bg-white px-4 py-3 border border-gray-100 rounded-2xl mt-4 shadow-sm gap-3">
+          <div className="text-xs sm:text-sm text-gray-500 text-center sm:text-left">
             Menampilkan <span className="font-medium text-dark">{startIndex + 1}</span> hingga <span className="font-medium text-dark">{Math.min(startIndex + ITEMS_PER_PAGE, filteredRiwayat.length)}</span> dari <span className="font-medium text-dark">{filteredRiwayat.length}</span> transaksi
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto justify-center">
             <Button
               variant="outline"
               size="sm"
