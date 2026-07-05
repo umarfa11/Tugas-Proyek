@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  kasir
+  super_admin
+}
+
+enum StatusPesanan {
+  diproses
+  selesai
+}
+
+enum MetodeBayar {
+  tunai
+  qris
+}
+
+enum StatusPembayaran {
+  lunas
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  nama       String    @db.VarChar(100)
+  username   String    @unique @db.VarChar(50)
+  password   String    @db.VarChar(255)
+  role       Role
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  pesanan    Pesanan[] // relation
+
+  @@map("users")
+}
+
+model Produk {
+  id            Int             @id @default(autoincrement())
+  namaProduk    String          @map("nama_produk") @db.VarChar(100)
+  kategori      String          @default("Makanan") @db.VarChar(50)
+  harga         Decimal         @db.Decimal(10, 2)
+  stok          Int
+  deactivatedAt DateTime?       @map("deactivated_at")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  detailPesanan DetailPesanan[] // relation
+
+  @@map("produk")
+}
+
+model Pesanan {
+  id            Int            @id @default(autoincrement())
+  nomorAntrian  Int            @map("nomor_antrian")
+  namaPembeli   String         @map("nama_pembeli") @db.VarChar(100)
+  userId        Int            @map("user_id")
+  totalHarga    Decimal        @map("total_harga") @db.Decimal(10, 2)
+  statusPesanan StatusPesanan  @map("status_pesanan")
+  enteredAt     DateTime       @default(now()) @map("entered_at")
+  completedAt   DateTime?      @map("completed_at")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  
+  user          User           @relation(fields: [userId], references: [id])
+  detailPesanan DetailPesanan[]
+  pembayaran    Pembayaran?
+
+  @@index([statusPesanan])
+  @@index([completedAt])
+  @@map("pesanan")
+}
+
+model DetailPesanan {
+  id         Int     @id @default(autoincrement())
+  pesananId  Int     @map("pesanan_id")
+  produkId   Int     @map("produk_id")
+  jumlah     Int
+  subtotal   Decimal @db.Decimal(10, 2)
+
+  pesanan    Pesanan @relation(fields: [pesananId], references: [id])
+  produk     Produk  @relation(fields: [produkId], references: [id])
+
+  @@map("detail_pesanan")
+}
+
+model Pembayaran {
+  id               Int              @id @default(autoincrement())
+  pesananId        Int              @unique @map("pesanan_id")
+  metodeBayar      MetodeBayar      @map("metode_bayar")
+  nominalDiterima  Decimal          @map("nominal_diterima") @db.Decimal(10, 2)
+  kembalian        Decimal          @db.Decimal(10, 2)
+  statusPembayaran StatusPembayaran @map("status_pembayaran")
+  paidAt           DateTime         @default(now()) @map("paid_at")
+
+  pesanan          Pesanan          @relation(fields: [pesananId], references: [id])
+
+  @@map("pembayaran")
+}

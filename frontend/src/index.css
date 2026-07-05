@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #FF6B6B;
+  --color-secondary: #4ECDC4;
+  --color-dark: #2d3436;
+  --color-light: #f9f9f9;
+  --font-sans: 'Inter', sans-serif;
+  
+  --animate-fade-in: fadeIn 0.2s ease-out;
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+}
+
+@layer base {
+  body {
+    background: linear-gradient(145deg, #fff5f5 0%, #fcfcfc 50%, #f0fdfa 100%);
+    background-attachment: fixed;
+    color: var(--color-dark);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Custom utility to hide scrollbars */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}

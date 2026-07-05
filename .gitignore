@@ -1,0 +1,17 @@
+# Dependency directories
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Production build directories
+frontend/dist/
+
+# Environmental variables/secrets (CRITICAL: Database credentials)
+.env
+backend/.env
+
+# IDE / System files
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
