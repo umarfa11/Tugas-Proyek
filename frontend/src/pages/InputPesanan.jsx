@@ -303,25 +303,18 @@ const InputPesanan = () => {
         </div>
       </div>
 
-      {/* Mobile Floating Cart Button */}
-      <div className="lg:hidden fixed bottom-20 left-4 right-4 z-40">
+      {/* Mobile Floating Cart Button (FAB) */}
+      <div className="lg:hidden fixed bottom-20 right-4 z-40">
         <button 
           onClick={() => setIsCartMobileOpen(true)}
-          className="w-full bg-gradient-to-r from-primary to-rose-400 text-white p-3.5 rounded-2xl shadow-xl shadow-primary/30 flex items-center justify-between active:scale-95 transition-transform"
+          className="relative w-14 h-14 bg-gradient-to-r from-primary to-rose-400 text-white rounded-full shadow-xl shadow-primary/30 flex items-center justify-center active:scale-95 transition-transform"
         >
-          <div className="flex items-center gap-3">
-            <div className="bg-white/20 p-2 rounded-xl">
-              <ShoppingCart size={20} />
-            </div>
-            <div className="text-left leading-tight">
-              <p className="text-[10px] font-medium text-white/80">Keranjang</p>
-              <p className="font-bold text-sm">{cart.reduce((s, i) => s + i.jumlah, 0)} Item</p>
-            </div>
-          </div>
-          <div className="text-right flex items-center gap-2">
-            <span className="font-black text-lg">{formatRupiah(totalHarga)}</span>
-            <ArrowRight size={18} />
-          </div>
+          <ShoppingCart size={24} />
+          {cart.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-dark text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+              {cart.reduce((s, i) => s + i.jumlah, 0)}
+            </span>
+          )}
         </button>
       </div>
 
