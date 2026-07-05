@@ -119,8 +119,12 @@ const InputPesanan = () => {
 
   // Open payment modal
   const handleOpenPayment = () => {
-    if (!namaPembeli.trim()) return;
     if (cart.length === 0) return;
+    
+    if (!namaPembeli.trim()) {
+      setNamaPembeli('Pelanggan');
+    }
+    
     setPaymentError('');
     setNominalDiterima('');
     setMetodeBayar('tunai');
@@ -223,7 +227,7 @@ const InputPesanan = () => {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto pr-2 pb-32 lg:pb-6 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto pb-32 lg:pb-6 scrollbar-hide">
           {isLoadingProduk ? (
             <div className="flex flex-col items-center justify-center h-64">
               <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4" />
@@ -235,7 +239,7 @@ const InputPesanan = () => {
               <span className="font-medium text-lg">Menu tidak ditemukan</span>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pt-3 pr-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 pt-3">
               {filteredProduk.map(produk => {
                 const inCart = cart.find(c => c.produkId === produk.id);
                 const isOutOfStock = produk.stok <= 0;
@@ -405,10 +409,10 @@ const InputPesanan = () => {
             <span className="text-2xl font-bold text-primary">{formatRupiah(totalHarga)}</span>
           </div>
           <button
-            disabled={cart.length === 0 || !namaPembeli.trim()}
+            disabled={cart.length === 0}
             onClick={handleOpenPayment}
             className={`w-full py-3 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all duration-200
-              ${cart.length === 0 || !namaPembeli.trim()
+              ${cart.length === 0
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : 'bg-gradient-to-r from-primary to-rose-400 text-white shadow-md shadow-primary/20 hover:shadow-lg hover:-translate-y-0.5'
               }
