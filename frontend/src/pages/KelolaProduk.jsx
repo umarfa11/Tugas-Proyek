@@ -75,7 +75,7 @@ const KelolaProduk = () => {
       stok: String(produk.stok),
       gambar: null,
     });
-    setPreviewUrl(produk.gambar ? `http://localhost:5000/uploads/${produk.gambar}` : null);
+    setPreviewUrl(produk.gambar ? `/uploads/${produk.gambar}` : null);
     setFormError('');
     setIsFormOpen(true);
   };
@@ -301,7 +301,7 @@ const KelolaProduk = () => {
                     <td className="px-6 py-4">
                       {produk.gambar ? (
                         <img 
-                          src={`http://localhost:5000/uploads/${produk.gambar}`} 
+                          src={`/uploads/${produk.gambar}`} 
                           alt={produk.namaProduk} 
                           className="w-12 h-12 object-cover rounded-lg border border-gray-100"
                         />

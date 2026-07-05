@@ -261,7 +261,7 @@ const InputPesanan = () => {
                     <div className="relative w-full h-40 sm:h-48 bg-gray-50 overflow-hidden shrink-0">
                       {produk.gambar ? (
                         <img 
-                          src={`http://localhost:5000/uploads/${produk.gambar}`} 
+                          src={`/uploads/${produk.gambar}`} 
                           alt={produk.namaProduk}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
