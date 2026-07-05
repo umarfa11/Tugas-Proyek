@@ -116,7 +116,7 @@ const Dashboard = () => {
       
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-dark mb-2">Ikhtisar Bisnis, {user?.nama}! 👋</h1>
+        <h1 className="text-3xl font-bold text-dark mb-2">Halo, {user?.nama}! 👋</h1>
         <p className="text-gray-500">
           Pantau performa <span className="font-semibold text-primary">KASIR BAKSOKU</span> secara real-time hari ini.
         </p>

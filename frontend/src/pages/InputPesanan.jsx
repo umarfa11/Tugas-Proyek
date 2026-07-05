@@ -184,7 +184,7 @@ const InputPesanan = () => {
   };
 
   return (
-    <div className="flex h-[calc(100vh-6rem)] gap-6">
+    <div className="flex flex-col lg:flex-row lg:h-[calc(100vh-6rem)] gap-6">
       {/* ===== LEFT: Product Grid ===== */}
       <div className="flex-1 flex flex-col min-w-0">
         <div className="mb-6">
@@ -286,7 +286,7 @@ const InputPesanan = () => {
       </div>
 
       {/* ===== RIGHT: Digital Receipt Cart ===== */}
-      <div className="w-96 bg-gradient-to-br from-white to-gray-50/80 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border border-gray-100">
+      <div className="w-full lg:w-96 lg:min-w-[384px] shrink-0 bg-gradient-to-br from-white to-gray-50/80 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border border-gray-100">
         
         {/* Cart Header */}
         <div className="px-5 py-4 text-center border-b border-gray-100">

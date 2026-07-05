@@ -88,7 +88,7 @@ const MonitorAntrian = () => {
           <p className="text-sm text-gray-300 mt-1">Semua pesanan sudah selesai diproses</p>
         </div>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {antrian.map((item, index) => (
             <div 
               key={item.id} 
@@ -96,9 +96,9 @@ const MonitorAntrian = () => {
                 index === 0 ? 'border-primary/30 ring-2 ring-primary/10' : 'border-gray-100'
               }`}
             >
-              <div className="flex items-stretch">
+              <div className="flex flex-col sm:flex-row items-stretch">
                 {/* Queue Number */}
-                <div className={`w-28 flex flex-col items-center justify-center py-6 ${
+                <div className={`w-full sm:w-28 flex flex-col items-center justify-center py-4 sm:py-6 ${
                   index === 0 ? 'bg-primary/10' : 'bg-gray-50'
                 }`}>
                   <span className="text-[10px] uppercase tracking-widest text-gray-400 font-semibold mb-1">Antrian</span>

@@ -161,7 +161,7 @@ const RiwayatPenjualan = () => {
   return (
     <div>
       {/* Header */}
-      <div className="flex justify-between items-end mb-8">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-dark">Riwayat Penjualan</h1>
           <p className="text-gray-400 text-sm mt-1">Lihat rekap seluruh transaksi yang sudah selesai</p>
