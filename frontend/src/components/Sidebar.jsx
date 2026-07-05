@@ -47,7 +47,7 @@ const Sidebar = () => {
     <>
       {/* Sidebar / Bottom Nav */}
       <aside 
-        className="fixed bottom-0 lg:top-0 left-0 w-full lg:w-64 h-[64px] lg:h-dvh bg-white border-t lg:border-t-0 lg:border-r border-gray-100 flex flex-row lg:flex-col z-50 lg:z-40 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] lg:shadow-sm overflow-x-auto lg:overflow-x-visible overflow-y-visible"
+        className="fixed bottom-0 lg:top-0 left-0 w-full lg:w-64 h-[64px] lg:h-dvh bg-white border-t lg:border-t-0 lg:border-r border-gray-100 flex flex-row lg:flex-col z-50 lg:z-40 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] lg:shadow-sm"
       >
       {/* Brand - Desktop Only */}
       <div className="hidden lg:block px-6 py-6 border-b border-gray-100">
