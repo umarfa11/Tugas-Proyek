@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Search, Package, AlertTriangle, RotateCcw, Bell, Image as ImageIcon, Upload, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Package, AlertTriangle, RotateCcw, Bell, Image as ImageIcon, Upload, X, ChevronDown, ChevronUp } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Modal from '../components/ui/Modal';
@@ -17,6 +17,7 @@ const KelolaProduk = () => {
   const [editingProduk, setEditingProduk] = useState(null);
   const [deletingProduk, setDeletingProduk] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isArsipOpen, setIsArsipOpen] = useState(false);
 
   // Form states
   const [formData, setFormData] = useState({ namaProduk: '', harga: '', stok: '', kategori: 'Makanan', gambar: null });
@@ -213,13 +214,29 @@ const KelolaProduk = () => {
 
       {/* Deactivated Products Notification (Soft Delete) */}
       {deactivatedProduk.length > 0 && (
-        <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3 shadow-sm animate-fade-in">
-          <Bell size={20} className="text-red-500 shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <h3 className="text-sm font-bold text-red-800">Notifikasi Produk Dinonaktifkan (Arsip 30 Hari)</h3>
-            <div className="text-sm text-red-700 mt-2 space-y-2">
-              <p>Produk berikut disembunyikan dari POS/Inventory dan akan dihapus permanen setelah 30 hari:</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+        <div className="mb-6 rounded-xl bg-red-50 border border-red-200 shadow-sm animate-fade-in transition-all overflow-hidden">
+          <div 
+            className="flex items-center justify-between p-4 cursor-pointer hover:bg-red-100/50 transition-colors"
+            onClick={() => setIsArsipOpen(!isArsipOpen)}
+          >
+            <div className="flex items-center gap-3">
+              <Bell size={20} className="text-red-500 shrink-0" />
+              <h3 className="text-sm font-bold text-red-800">
+                Notifikasi Produk Dinonaktifkan ({deactivatedProduk.length} Arsip)
+              </h3>
+            </div>
+            {isArsipOpen ? (
+              <ChevronUp size={20} className="text-red-500" />
+            ) : (
+              <ChevronDown size={20} className="text-red-500" />
+            )}
+          </div>
+
+          {isArsipOpen && (
+            <div className="px-4 pb-4 border-t border-red-100/50 pt-3">
+              <div className="text-sm text-red-700 space-y-2">
+                <p>Produk berikut disembunyikan dari POS/Inventory dan akan dihapus permanen setelah 30 hari:</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
                 {deactivatedProduk.map(p => {
                   // Calculate remaining days
                   const deactDate = new Date(p.deactivatedAt);
@@ -244,9 +261,10 @@ const KelolaProduk = () => {
                     </div>
                   );
                 })}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
