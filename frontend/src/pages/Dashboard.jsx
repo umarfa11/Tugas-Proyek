@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import {
-  Package, ShoppingCart, ListOrdered, History, ArrowRight, TrendingUp, DollarSign, Activity
+  Package, ShoppingCart, ListOrdered, History, ArrowRight, TrendingUp, DollarSign, Activity, ChevronDown, SlidersHorizontal
 } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 import api from '../services/api';
@@ -114,12 +114,22 @@ const Dashboard = () => {
   return (
     <div className="max-w-7xl mx-auto pb-10">
 
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-dark mb-2">Halo, {user?.nama}! 👋</h1>
-        <p className="text-gray-500">
-          Pantau performa <span className="font-semibold text-primary">KASIR BAKSOKU</span> secara real-time hari ini.
-        </p>
+      {/* Header Area */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-dark mb-1">Dashboard Overview</h1>
+          <p className="text-sm text-gray-500">
+            Ringkasan performa dan aktivitas Kasir Baksoku hari ini
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button className="px-4 py-2 bg-white border border-gray-200 text-dark rounded-full text-sm font-medium hover:bg-gray-50 transition-colors flex items-center gap-2">
+            Hari Ini <ChevronDown size={16} className="text-gray-400" />
+          </button>
+          <button className="px-4 py-2 bg-primary text-white rounded-full text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-2 shadow-sm shadow-primary/30">
+            <SlidersHorizontal size={16} /> Filter
+          </button>
+        </div>
       </div>
 
       {/* Summary Cards */}
@@ -128,72 +138,84 @@ const Dashboard = () => {
         {/* Card 1: Pendapatan */}
         <div
           onClick={() => navigate('/admin/riwayat')}
-          className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden group cursor-pointer hover:shadow-md transition-all"
+          className="bg-white p-6 rounded-[1.5rem] border border-gray-100 shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all"
         >
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-green-50 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out z-0"></div>
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-green-100 text-green-600 flex items-center justify-center">
-                <DollarSign size={24} />
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <p className="text-gray-500 text-sm font-medium mb-1">Total Pendapatan</p>
+              <div className="flex items-center gap-2 mb-3">
+                <h3 className="text-3xl font-bold text-dark tracking-tight">{formatRupiah(stats.pendapatanHariIni)}</h3>
               </div>
-              <ArrowRight size={20} className="text-gray-300 group-hover:text-green-500 transition-colors" />
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-green-50 text-green-600 px-2 py-1 rounded-md">
+                <TrendingUp size={12} /> +12.5%
+              </span>
             </div>
-            <p className="text-gray-400 text-sm font-medium mb-1">Pendapatan Hari Ini</p>
-            <h3 className="text-2xl font-bold text-dark">{formatRupiah(stats.pendapatanHariIni)}</h3>
+            <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center shrink-0">
+              <DollarSign size={22} className="text-green-500" />
+            </div>
           </div>
         </div>
 
         {/* Card 2: Transaksi */}
         <div
           onClick={() => navigate('/admin/pesanan')}
-          className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden group cursor-pointer hover:shadow-md transition-all"
+          className="bg-white p-6 rounded-[1.5rem] border border-gray-100 shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all"
         >
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-50 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out z-0"></div>
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center">
-                <ShoppingCart size={24} />
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <p className="text-gray-500 text-sm font-medium mb-1">Total Pesanan</p>
+              <div className="flex items-center gap-2 mb-3">
+                <h3 className="text-3xl font-bold text-dark tracking-tight">{stats.transaksiHariIni}</h3>
               </div>
-              <ArrowRight size={20} className="text-gray-300 group-hover:text-blue-500 transition-colors" />
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-blue-50 text-blue-600 px-2 py-1 rounded-md">
+                <TrendingUp size={12} /> +8.2%
+              </span>
             </div>
-            <p className="text-gray-400 text-sm font-medium mb-1">Total Transaksi (Hari Ini)</p>
-            <h3 className="text-2xl font-bold text-dark">{stats.transaksiHariIni} <span className="text-sm font-normal text-gray-400">Pesanan</span></h3>
+            <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
+              <ShoppingCart size={22} className="text-blue-500" />
+            </div>
           </div>
         </div>
 
         {/* Card 3: Antrian */}
         <div
           onClick={() => navigate('/admin/antrian')}
-          className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden group cursor-pointer hover:shadow-md transition-all"
+          className="bg-white p-6 rounded-[1.5rem] border border-gray-100 shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all"
         >
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-yellow-50 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out z-0"></div>
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-yellow-100 text-yellow-600 flex items-center justify-center">
-                <ListOrdered size={24} />
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <p className="text-gray-500 text-sm font-medium mb-1">Antrian Aktif</p>
+              <div className="flex items-center gap-2 mb-3">
+                <h3 className="text-3xl font-bold text-dark tracking-tight">{stats.antrian}</h3>
               </div>
-              <ArrowRight size={20} className="text-gray-300 group-hover:text-yellow-500 transition-colors" />
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-yellow-50 text-yellow-600 px-2 py-1 rounded-md">
+                <Activity size={12} /> Live
+              </span>
             </div>
-            <p className="text-gray-400 text-sm font-medium mb-1">Antrian Aktif</p>
-            <h3 className="text-2xl font-bold text-dark">{stats.antrian} <span className="text-sm font-normal text-gray-400">Menunggu</span></h3>
+            <div className="w-12 h-12 rounded-full bg-yellow-50 flex items-center justify-center shrink-0">
+              <ListOrdered size={22} className="text-yellow-500" />
+            </div>
           </div>
         </div>
 
         {/* Card 4: Produk */}
         <div
           onClick={() => navigate('/admin/produk')}
-          className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden group cursor-pointer hover:shadow-md transition-all"
+          className="bg-white p-6 rounded-[1.5rem] border border-gray-100 shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all"
         >
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-purple-50 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out z-0"></div>
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center">
-                <Package size={24} />
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <p className="text-gray-500 text-sm font-medium mb-1">Total Produk Menu</p>
+              <div className="flex items-center gap-2 mb-3">
+                <h3 className="text-3xl font-bold text-dark tracking-tight">{stats.produk}</h3>
               </div>
-              <ArrowRight size={20} className="text-gray-300 group-hover:text-purple-500 transition-colors" />
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-purple-50 text-purple-600 px-2 py-1 rounded-md">
+                <Package size={12} /> Active
+              </span>
             </div>
-            <p className="text-gray-400 text-sm font-medium mb-1">Total Produk Menu</p>
-            <h3 className="text-2xl font-bold text-dark">{stats.produk} <span className="text-sm font-normal text-gray-400">Item</span></h3>
+            <div className="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center shrink-0">
+              <Package size={22} className="text-purple-500" />
+            </div>
           </div>
         </div>
 
@@ -202,27 +224,20 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
         {/* Chart Area */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+        <div className="lg:col-span-2 bg-white p-6 rounded-[1.5rem] border border-gray-100 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-lg font-bold text-dark">Grafik Penjualan</h2>
-              <p className="text-sm text-gray-400">Tren pendapatan bulanan tahun ini</p>
+              <h2 className="text-xl font-bold text-dark">Performance Overview</h2>
             </div>
-            <div className="p-2 bg-primary/10 rounded-xl">
-              <TrendingUp size={20} className="text-primary" />
-            </div>
+            <button className="px-4 py-1.5 bg-gray-50 border border-gray-100 text-dark rounded-full text-xs font-medium hover:bg-gray-100 transition-colors flex items-center gap-1">
+              Tahun Ini <ChevronDown size={14} className="text-gray-400" />
+            </button>
           </div>
 
-          <div className="h-[300px] w-full">
+          <div className="h-[300px] w-full mt-4">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#FF6B6B" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#FF6B6B" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f8fafc" />
                 <XAxis
                   dataKey="name"
                   axisLine={false}
@@ -238,8 +253,9 @@ const Dashboard = () => {
                   width={60}
                 />
                 <Tooltip
-                  contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                  labelStyle={{ fontWeight: 'bold', color: '#1e293b', marginBottom: '4px' }}
+                  cursor={{ fill: 'transparent' }}
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', padding: '12px 16px' }}
+                  labelStyle={{ fontWeight: 'bold', color: '#1e293b', marginBottom: '8px' }}
                   formatter={(value) => [formatRupiah(value), "Pendapatan"]}
                   labelFormatter={(label, payload) => {
                     if (payload && payload.length > 0) {
@@ -248,30 +264,27 @@ const Dashboard = () => {
                     return label;
                   }}
                 />
-                <Area
-                  type="monotone"
-                  dataKey="total"
-                  stroke="#FF6B6B"
-                  strokeWidth={3}
-                  fillOpacity={1}
-                  fill="url(#colorTotal)"
-                  activeDot={{ r: 6, fill: '#FF6B6B', stroke: '#fff', strokeWidth: 3 }}
+                <Bar 
+                  dataKey="total" 
+                  fill="#FF6B6B"
+                  radius={[6, 6, 6, 6]} 
+                  barSize={32}
+                  background={{ fill: '#f1f5f9', radius: [6, 6, 6, 6] }}
                 />
-              </AreaChart>
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Recent Activity List */}
-        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col">
+        <div className="bg-white p-6 rounded-[1.5rem] border border-gray-100 shadow-sm flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-lg font-bold text-dark">Aktivitas Terkini</h2>
-              <p className="text-sm text-gray-400">Transaksi terbaru</p>
+              <h2 className="text-xl font-bold text-dark">Aktivitas Terkini</h2>
             </div>
-            <div className="p-2 bg-blue-50 rounded-xl">
-              <Activity size={20} className="text-blue-500" />
-            </div>
+            <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50">
+              <span className="text-xl leading-none -mt-2">...</span>
+            </button>
           </div>
 
           <div className="flex-1 overflow-y-auto pr-2 space-y-4">
