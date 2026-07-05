@@ -547,22 +547,6 @@ const InputPesanan = () => {
       <Modal isOpen={isStrukOpen} onClose={() => setIsStrukOpen(false)} title="Struk Berhasil Dicetak" size="sm">
         {strukData && <Struk data={strukData} onClose={() => setIsStrukOpen(false)} />}
       </Modal>
-      {/* Floating Mobile Cart Button */}
-      {cart.length > 0 && (
-        <div className="lg:hidden fixed bottom-6 right-6 z-30 animate-fade-in">
-          <button
-            onClick={() => {
-              document.getElementById('cart-section')?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="bg-primary text-white p-4 rounded-full shadow-2xl shadow-primary/40 flex items-center justify-center relative active:scale-95 transition-transform"
-          >
-            <ShoppingCart size={24} />
-            <div className="absolute -top-2 -right-2 w-6 h-6 bg-dark text-white text-xs font-black rounded-full flex items-center justify-center ring-2 ring-white">
-              {cart.reduce((sum, item) => sum + item.jumlah, 0)}
-            </div>
-          </button>
-        </div>
-      )}
     </div>
   );
 };
