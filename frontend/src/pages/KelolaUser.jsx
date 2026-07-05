@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, Trash2, AlertTriangle, ShieldCheck, User } from 'lucide-react';
+import { Users, Plus, Trash2, AlertTriangle, ShieldCheck, User, Pencil } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Modal from '../components/ui/Modal';
@@ -13,6 +13,7 @@ const KelolaUser = () => {
 
   // Modal states
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deletingUser, setDeletingUser] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -38,7 +39,20 @@ const KelolaUser = () => {
   }, []);
 
   const handleAdd = () => {
+    setEditingUser(null);
     setFormData({ nama: '', username: '', password: '', role: 'kasir' });
+    setFormError('');
+    setIsFormOpen(true);
+  };
+
+  const handleEdit = (userData) => {
+    setEditingUser(userData);
+    setFormData({ 
+      nama: userData.nama, 
+      username: userData.username, 
+      password: '', // Leave blank unless they want to change
+      role: userData.role 
+    });
     setFormError('');
     setIsFormOpen(true);
   };
@@ -52,18 +66,24 @@ const KelolaUser = () => {
     e.preventDefault();
     setFormError('');
 
-    if (!formData.nama || !formData.username || !formData.password) {
-      setFormError('Semua field wajib diisi');
+    if (!formData.nama || !formData.username || (!editingUser && !formData.password)) {
+      setFormError('Field Nama dan Username wajib diisi');
       return;
     }
 
     setIsSaving(true);
     try {
-      await api.post('/auth/register', formData);
+      if (editingUser) {
+        const updateData = { ...formData };
+        if (!updateData.password) delete updateData.password;
+        await api.put(`/auth/users/${editingUser.id}`, updateData);
+      } else {
+        await api.post('/auth/register', formData);
+      }
       setIsFormOpen(false);
       fetchUsers();
     } catch (err) {
-      setFormError(err.response?.data?.message || 'Gagal membuat akun');
+      setFormError(err.response?.data?.message || 'Gagal menyimpan data akun');
     } finally {
       setIsSaving(false);
     }
@@ -160,6 +180,13 @@ const KelolaUser = () => {
                     Dibuat: {formatDate(usr.createdAt)}
                   </span>
                   <button
+                    onClick={() => handleEdit(usr)}
+                    className="p-2 rounded-xl transition-all text-gray-400 hover:text-secondary hover:bg-secondary/10"
+                    title="Edit Akun"
+                  >
+                    <Pencil size={16} />
+                  </button>
+                  <button
                     onClick={() => handleDeleteConfirm(usr)}
                     disabled={currentUser?.id === usr.id}
                     className={`p-2 rounded-xl transition-all ${
@@ -178,8 +205,8 @@ const KelolaUser = () => {
         </div>
       )}
 
-      {/* Create User Modal */}
-      <Modal isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} title="Buat Akun Baru" size="sm">
+      {/* Create / Edit User Modal */}
+      <Modal isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} title={editingUser ? "Edit Akun" : "Buat Akun Baru"} size="sm">
         <form onSubmit={handleSubmit} className="space-y-4">
           {formError && (
             <div className="p-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm">
@@ -205,7 +232,7 @@ const KelolaUser = () => {
           <Input
             label="Password"
             type="password"
-            placeholder="Minimal 6 karakter"
+            placeholder={editingUser ? "Kosongkan jika tidak diubah" : "Minimal 6 karakter"}
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           />
@@ -245,7 +272,7 @@ const KelolaUser = () => {
               Batal
             </Button>
             <Button type="submit" variant="primary" className="flex-1 bg-gradient-to-r from-primary to-rose-500 border-transparent text-white" isLoading={isSaving}>
-              Buat Akun
+              {editingUser ? "Simpan" : "Buat Akun"}
             </Button>
           </div>
         </form>

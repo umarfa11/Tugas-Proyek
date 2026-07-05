@@ -244,38 +244,53 @@ const InputPesanan = () => {
                     key={produk.id}
                     onClick={() => !isOutOfStock && addToCart(produk)}
                     disabled={isOutOfStock}
-                    className={`relative text-left p-5 rounded-2xl border transition-all duration-200 group
+                    className={`relative flex flex-col text-left rounded-3xl border overflow-hidden transition-all duration-300 group
                       ${isOutOfStock
                         ? 'bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed grayscale'
-                        : `${meta.cardBg} ${meta.border} hover:shadow-lg hover:-translate-y-0.5 cursor-pointer`
+                        : `bg-white border-gray-100 hover:border-primary/30 hover:shadow-xl hover:-translate-y-1 cursor-pointer`
                       }
                     `}
                   >
                     {inCart && (
-                      <div className="absolute -top-3 -right-3 w-7 h-7 bg-dark text-white text-xs font-black rounded-full flex items-center justify-center shadow-lg ring-2 ring-white animate-fade-in z-10">
+                      <div className="absolute top-3 right-3 w-8 h-8 bg-dark text-white text-sm font-black rounded-full flex items-center justify-center shadow-lg ring-2 ring-white animate-fade-in z-20">
                         {inCart.jumlah}
                       </div>
                     )}
                     
-                    <div className="flex justify-between items-start mb-4">
-                      <div className={`w-12 h-12 rounded-2xl ${meta.bg} flex items-center justify-center transition-transform group-hover:scale-110 duration-300`}>
-                        <Icon size={24} className={meta.color} />
-                      </div>
-                      <span className={`text-[10px] font-extrabold uppercase px-2 py-1 rounded-full ${isOutOfStock ? 'bg-red-100 text-red-600' : 'bg-white/60 text-gray-600'}`}>
-                        Sisa {produk.stok}
-                      </span>
-                    </div>
-                    
-                    <h3 className="font-bold text-dark text-base leading-tight mb-1 group-hover:text-primary transition-colors">{produk.namaProduk}</h3>
-                    <p className="text-gray-500 font-semibold text-sm mb-3 opacity-80">{produk.kategori || 'Makanan'}</p>
-                    
-                    <div className="flex items-center justify-between mt-auto">
-                      <p className="text-dark font-black text-lg">{formatRupiah(produk.harga)}</p>
-                      {!isOutOfStock && (
-                        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm text-gray-400 group-hover:text-primary group-hover:bg-primary/10 transition-colors">
-                          <Plus size={16} strokeWidth={3} />
+                    {/* Image Header */}
+                    <div className="relative w-full h-40 sm:h-48 bg-gray-50 overflow-hidden shrink-0">
+                      {produk.gambar ? (
+                        <img 
+                          src={`http://localhost:5000/uploads/${produk.gambar}`} 
+                          alt={produk.namaProduk}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      ) : (
+                        <div className={`w-full h-full flex items-center justify-center ${meta.bg} transition-transform duration-700 group-hover:scale-110`}>
+                          <Icon size={48} className={`${meta.color} opacity-40`} />
                         </div>
                       )}
+                      
+                      <div className="absolute top-3 left-3 z-10">
+                        <span className={`text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full shadow-sm backdrop-blur-md ${isOutOfStock ? 'bg-red-500/90 text-white' : 'bg-white/90 text-gray-700'}`}>
+                          Sisa {produk.stok}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="p-4 flex-1 flex flex-col w-full">
+                      <h3 className="font-bold text-dark text-base leading-tight mb-1 group-hover:text-primary transition-colors line-clamp-2">{produk.namaProduk}</h3>
+                      <p className="text-gray-500 font-medium text-xs mb-3">{produk.kategori || 'Makanan'}</p>
+                      
+                      <div className="flex items-center justify-between mt-auto pt-2">
+                        <p className="text-dark font-black text-lg">{formatRupiah(produk.harga)}</p>
+                        {!isOutOfStock && (
+                          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                            <Plus size={18} strokeWidth={3} />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </button>
                 );

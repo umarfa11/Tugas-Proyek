@@ -6,6 +6,7 @@ const ProdukDeaktif = () => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [activeCategory, setActiveCategory] = useState('Semua');
   const [notification, setNotification] = useState(null);
 
   const fetchDeactivatedProducts = async () => {
@@ -61,10 +62,11 @@ const ProdukDeaktif = () => {
     return remaining > 0 ? remaining : 0;
   };
 
-  const filteredProducts = products.filter(product =>
-    product.namaProduk.toLowerCase().includes(search.toLowerCase()) ||
-    product.kategori.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredProducts = products.filter(product => {
+    const matchSearch = product.namaProduk.toLowerCase().includes(search.toLowerCase());
+    const matchCategory = activeCategory === 'Semua' || product.kategori === activeCategory;
+    return matchSearch && matchCategory;
+  });
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -96,17 +98,28 @@ const ProdukDeaktif = () => {
       )}
 
       {/* Search Filter */}
-      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex gap-4 mb-6">
+      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 mb-6">
         <div className="flex-1 relative">
           <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            placeholder="Cari berdasarkan nama produk atau kategori..."
+            placeholder="Cari berdasarkan nama produk..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm text-dark placeholder-gray-400"
           />
         </div>
+        <select
+          value={activeCategory}
+          onChange={(e) => setActiveCategory(e.target.value)}
+          className="w-full sm:w-48 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm text-dark"
+        >
+          <option value="Semua">Semua Kategori</option>
+          <option value="Makanan">Makanan</option>
+          <option value="Minuman">Minuman</option>
+          <option value="Dessert">Dessert</option>
+          <option value="Lainnya">Lainnya</option>
+        </select>
       </div>
 
       {/* Products Table */}

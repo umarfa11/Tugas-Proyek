@@ -11,5 +11,6 @@ router.post('/login', authController.login);
 // Protected Admin Routes
 router.get('/users', verifyToken, verifyRole(['super_admin']), authController.getUsers);
 router.delete('/users/:id', verifyToken, verifyRole(['super_admin']), authController.deleteUser);
+router.put('/users/:id', verifyToken, verifyRole(['super_admin']), authController.updateUser);
 
 module.exports = router;

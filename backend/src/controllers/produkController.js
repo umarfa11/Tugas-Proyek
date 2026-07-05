@@ -1,4 +1,6 @@
 const prisma = require('../config/db');
+const fs = require('fs');
+const path = require('path');
 
 // Background job to clean up deactivated products older than 30 days
 const cleanupDeactivatedProducts = async () => {
@@ -22,9 +24,14 @@ const cleanupDeactivatedProducts = async () => {
 
     for (const item of productsToDelete) {
       try {
+        const itemData = await prisma.produk.findUnique({ where: { id: item.id }});
         await prisma.produk.delete({
           where: { id: item.id }
         });
+        if (itemData && itemData.gambar) {
+          const imagePath = path.join(__dirname, '../../uploads', itemData.gambar);
+          if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+        }
         console.log(`[CLEANUP] Product ID ${item.id} permanently deleted.`);
       } catch (err) {
         // If it fails (due to Foreign Key constraint), we ignore it so it remains soft-deleted (deactivated)
@@ -77,12 +84,15 @@ const createProduk = async (req, res) => {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
+    const gambar = req.file ? req.file.filename : null;
+
     const produk = await prisma.produk.create({
       data: {
         namaProduk,
         kategori,
         harga: Number(harga),
-        stok: Number(stok)
+        stok: Number(stok),
+        gambar
       }
     });
 
@@ -105,14 +115,30 @@ const updateProduk = async (req, res) => {
       return res.status(404).json({ message: 'Produk not found' });
     }
 
+    const dataToUpdate = {
+      namaProduk: namaProduk || existing.namaProduk,
+      kategori: kategori || existing.kategori,
+      harga: harga != null ? Number(harga) : existing.harga,
+      stok: stok != null ? Number(stok) : existing.stok
+    };
+
+    if (req.file) {
+      dataToUpdate.gambar = req.file.filename;
+      if (existing.gambar) {
+        const oldPath = path.join(__dirname, '../../uploads', existing.gambar);
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      }
+    } else if (req.body.removeImage === 'true') {
+      dataToUpdate.gambar = null;
+      if (existing.gambar) {
+        const oldPath = path.join(__dirname, '../../uploads', existing.gambar);
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      }
+    }
+
     const produk = await prisma.produk.update({
       where: { id: produkId },
-      data: {
-        namaProduk: namaProduk || existing.namaProduk,
-        kategori: kategori || existing.kategori,
-        harga: harga != null ? Number(harga) : existing.harga,
-        stok: stok != null ? Number(stok) : existing.stok
-      }
+      data: dataToUpdate
     });
 
     res.status(200).json({ message: 'Produk updated', produk });

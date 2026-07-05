@@ -55,7 +55,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
       {/* Sidebar */}
       <aside 
-        className={`fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-100 flex flex-col z-40 shadow-sm transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed left-0 top-0 h-dvh w-64 bg-white border-r border-gray-100 flex flex-col z-40 shadow-sm transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -90,7 +90,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       </nav>
 
       {/* User Info & Logout */}
-      <div className="p-4 border-t border-gray-100">
+      <div className="p-4 pb-8 sm:pb-4 border-t border-gray-100">
         <div className="flex items-center gap-3 px-3 mb-3">
           <div className="w-9 h-9 rounded-full bg-secondary/20 flex items-center justify-center">
             <span className="text-secondary font-bold text-sm">

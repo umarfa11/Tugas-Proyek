@@ -156,10 +156,64 @@ const deleteUser = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = parseInt(id);
+    const { nama, username, password, role } = req.body;
+
+    const targetUser = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    if (!targetUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const dataToUpdate = {
+      nama,
+      role
+    };
+
+    if (username && username !== targetUser.username) {
+      const existingUser = await prisma.user.findUnique({
+        where: { username }
+      });
+      if (existingUser) {
+        return res.status(400).json({ message: 'Username sudah digunakan' });
+      }
+      dataToUpdate.username = username;
+    }
+
+    if (password) {
+      const saltRounds = 10;
+      dataToUpdate.password = await bcrypt.hash(password, saltRounds);
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: dataToUpdate
+    });
+
+    res.status(200).json({
+      message: 'User updated successfully',
+      user: {
+        id: updatedUser.id,
+        nama: updatedUser.nama,
+        username: updatedUser.username,
+        role: updatedUser.role
+      }
+    });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 module.exports = {
   register,
   login,
   getUsers,
-  deleteUser
+  deleteUser,
+  updateUser
 };

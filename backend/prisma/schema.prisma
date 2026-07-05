@@ -45,6 +45,7 @@ model Produk {
   kategori      String          @default("Makanan") @db.VarChar(50)
   harga         Decimal         @db.Decimal(10, 2)
   stok          Int
+  gambar        String?         @db.VarChar(255)
   deactivatedAt DateTime?       @map("deactivated_at")
   createdAt     DateTime        @default(now()) @map("created_at")
   updatedAt     DateTime        @updatedAt @map("updated_at")

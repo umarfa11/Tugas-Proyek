@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Search, Package, AlertTriangle, RotateCcw, Bell } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Package, AlertTriangle, RotateCcw, Bell, Image as ImageIcon, Upload, X } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Modal from '../components/ui/Modal';
@@ -19,7 +19,8 @@ const KelolaProduk = () => {
   const [isSaving, setIsSaving] = useState(false);
 
   // Form states
-  const [formData, setFormData] = useState({ namaProduk: '', harga: '', stok: '', kategori: 'Makanan' });
+  const [formData, setFormData] = useState({ namaProduk: '', harga: '', stok: '', kategori: 'Makanan', gambar: null });
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [formError, setFormError] = useState('');
 
   // Fetch active products
@@ -58,7 +59,8 @@ const KelolaProduk = () => {
   // Open Add Modal
   const handleAdd = () => {
     setEditingProduk(null);
-    setFormData({ namaProduk: '', harga: '', stok: '', kategori: 'Makanan' });
+    setFormData({ namaProduk: '', harga: '', stok: '', kategori: 'Makanan', gambar: null });
+    setPreviewUrl(null);
     setFormError('');
     setIsFormOpen(true);
   };
@@ -71,7 +73,9 @@ const KelolaProduk = () => {
       kategori: produk.kategori || 'Makanan',
       harga: String(produk.harga),
       stok: String(produk.stok),
+      gambar: null,
     });
+    setPreviewUrl(produk.gambar ? `http://localhost:5000/uploads/${produk.gambar}` : null);
     setFormError('');
     setIsFormOpen(true);
   };
@@ -88,16 +92,31 @@ const KelolaProduk = () => {
     setFormError('');
 
     if (!formData.namaProduk || !formData.harga || formData.stok === '' || !formData.kategori) {
-      setFormError('Semua field wajib diisi');
+      setFormError('Semua field (selain gambar) wajib diisi');
       return;
     }
 
     setIsSaving(true);
     try {
+      const data = new FormData();
+      data.append('namaProduk', formData.namaProduk);
+      data.append('kategori', formData.kategori);
+      data.append('harga', formData.harga);
+      data.append('stok', formData.stok);
+      if (formData.gambar) {
+        data.append('gambar', formData.gambar);
+      } else if (editingProduk && !previewUrl) {
+        data.append('removeImage', 'true');
+      }
+
       if (editingProduk) {
-        await api.put(`/produk/${editingProduk.id}`, formData);
+        await api.put(`/produk/${editingProduk.id}`, data, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
       } else {
-        await api.post('/produk', formData);
+        await api.post('/produk', data, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
       }
       setIsFormOpen(false);
       fetchProduk();
@@ -105,6 +124,19 @@ const KelolaProduk = () => {
       setFormError(err.response?.data?.message || 'Gagal menyimpan data');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setFormError('Ukuran gambar maksimal 5MB');
+        return;
+      }
+      setFormData({ ...formData, gambar: file });
+      setPreviewUrl(URL.createObjectURL(file));
+      setFormError('');
     }
   };
 
@@ -235,6 +267,7 @@ const KelolaProduk = () => {
             <thead>
               <tr className="bg-gray-50/80 text-gray-500 text-left">
                 <th className="px-6 py-4 font-semibold">No</th>
+                <th className="px-6 py-4 font-semibold">Gambar</th>
                 <th className="px-6 py-4 font-semibold">Nama Produk</th>
                 <th className="px-6 py-4 font-semibold">Kategori</th>
                 <th className="px-6 py-4 font-semibold">Harga</th>
@@ -245,7 +278,7 @@ const KelolaProduk = () => {
             <tbody className="divide-y divide-gray-50">
               {isLoading ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-16 text-center text-gray-400">
+                  <td colSpan="7" className="px-6 py-16 text-center text-gray-400">
                     <div className="flex flex-col items-center gap-2">
                       <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
                       <span>Memuat data produk...</span>
@@ -254,7 +287,7 @@ const KelolaProduk = () => {
                 </tr>
               ) : filteredProduk.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-16 text-center text-gray-400">
+                  <td colSpan="7" className="px-6 py-16 text-center text-gray-400">
                     <div className="flex flex-col items-center gap-2">
                       <Package size={36} className="text-gray-300" />
                       <span>Belum ada data produk aktif</span>
@@ -265,6 +298,19 @@ const KelolaProduk = () => {
                 filteredProduk.map((produk, index) => (
                   <tr key={produk.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4 text-gray-400 font-medium">{index + 1}</td>
+                    <td className="px-6 py-4">
+                      {produk.gambar ? (
+                        <img 
+                          src={`http://localhost:5000/uploads/${produk.gambar}`} 
+                          alt={produk.namaProduk} 
+                          className="w-12 h-12 object-cover rounded-lg border border-gray-100"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100 text-gray-300">
+                          <ImageIcon size={20} />
+                        </div>
+                      )}
+                    </td>
                     <td className="px-6 py-4 font-semibold text-dark">{produk.namaProduk}</td>
                     <td className="px-6 py-4 text-gray-500">
                       <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
@@ -326,6 +372,36 @@ const KelolaProduk = () => {
             value={formData.namaProduk}
             onChange={(e) => setFormData({ ...formData, namaProduk: e.target.value })}
           />
+          
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-dark block">Gambar Produk (Opsional)</label>
+            {previewUrl ? (
+              <div className="relative w-max">
+                <img src={previewUrl} alt="Preview" className="w-32 h-32 object-cover rounded-xl border border-gray-200" />
+                <button
+                  type="button"
+                  onClick={() => { setPreviewUrl(null); setFormData({ ...formData, gambar: null }) }}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <div className="w-full relative">
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg, image/webp"
+                  onChange={handleImageChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <div className="w-full p-4 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50 flex flex-col items-center justify-center text-gray-400 hover:border-primary/50 hover:bg-primary/5 transition-colors cursor-pointer">
+                  <Upload size={24} className="mb-2" />
+                  <span className="text-sm font-medium">Klik untuk unggah gambar</span>
+                  <span className="text-xs opacity-70 mt-1">Maks 5MB (JPG, PNG, WEBP)</span>
+                </div>
+              </div>
+            )}
+          </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-dark block">Kategori</label>
             <select
