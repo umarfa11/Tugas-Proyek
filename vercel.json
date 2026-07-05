@@ -12,6 +12,7 @@
       "src": "backend/src/server.js",
       "use": "@vercel/node"
     }
+  ],
   "routes": [
     {
       "src": "/api/(.*)",
