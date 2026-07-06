@@ -8,8 +8,9 @@ Berikut adalah *kisi-kisi* atau kerangka singkat yang bisa Anda jadikan panduan 
 *   **Database**: MySQL dengan Prisma ORM.
 
 ## 2. Fitur Inti Aplikasi
-*   **Manajemen Hak Akses (Role-Based)**: Pemisahan akses aman dengan JWT untuk **Super Admin** (Pemilik) dan **Kasir**.
-*   **Manajemen Katalog (Soft-Delete)**: Fitur CRUD menu yang tidak menghapus data secara langsung untuk mencegah hilangnya detail struk transaksi lama.
+*   **Dasbor Analitik (*Real-Time Dashboard*)**: Menyajikan ringkasan performa bisnis seperti total pendapatan, pesanan, metrik antrian, dan visualisasi grafik (*Bar Chart*) secara langsung.
+*   **Manajemen Hak Akses & Akun (Role-Based)**: Pemisahan akses aman dengan JWT untuk **Super Admin** (Pemilik) dan **Kasir**, dilengkapi dengan fitur **Kelola Akun** untuk manajemen pengguna kasir.
+*   **Manajemen Katalog (Soft-Delete) & Produk Deaktif**: Fitur CRUD menu yang tidak menghapus data secara langsung untuk mencegah hilangnya detail transaksi lama. Terdapat menu khusus **Produk Deaktif** untuk memulihkan (*restore*) produk atau menghapusnya secara permanen (termasuk via otomatisasi *Cron-Job* 30 hari).
 *   **Sistem Kasir (POS) & Pembayaran**: Fitur keranjang cerdas dengan validasi stok *real-time*, mendukung pembayaran Tunai dan Nontunai (QRIS).
 *   **Manajemen Antrian**: Nomor urut otomatis (FIFO) yang diatur ulang (reset) secara otomatis setiap jam 00:00.
 *   **Riwayat & Cetak Struk**: Laporan dapat difilter (berdasarkan tanggal/pembayaran), cetak ulang nota, serta kompatibel 100% dengan **Printer Thermal 58mm**.
