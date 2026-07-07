@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, RotateCcw, PackageOpen, RefreshCw, AlertTriangle } from 'lucide-react';
+import { Search, RotateCcw, PackageOpen, AlertTriangle } from 'lucide-react';
 import api from '../services/api';
 
 const ProdukDeaktif = () => {
@@ -76,13 +76,6 @@ const ProdukDeaktif = () => {
           <h1 className="text-2xl font-bold text-dark">Produk Deaktif</h1>
           <p className="text-gray-400 text-sm mt-1">Daftar produk yang diarsipkan sementara selama 30 hari sebelum dihapus permanen</p>
         </div>
-        <button
-          onClick={fetchDeactivatedProducts}
-          className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:text-dark hover:border-gray-300 transition-colors shadow-sm"
-        >
-          <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
-          Segarkan
-        </button>
       </div>
 
       {/* Global Notification */}
