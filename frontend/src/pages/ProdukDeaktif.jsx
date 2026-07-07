@@ -124,7 +124,7 @@ const ProdukDeaktif = () => {
                 <th className="px-6 py-4">Nama Produk</th>
                 <th className="px-6 py-4 w-28">Kategori</th>
                 <th className="px-6 py-4 w-28">Harga</th>
-                <th className="px-6 py-4 w-36">Sisa Penangguhan</th>
+                <th className="px-6 py-4 whitespace-nowrap">Sisa Penangguhan</th>
                 <th className="px-6 py-4 w-24 text-right">Aksi</th>
               </tr>
             </thead>
