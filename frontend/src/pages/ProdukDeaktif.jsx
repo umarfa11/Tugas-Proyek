@@ -28,7 +28,7 @@ const ProdukDeaktif = () => {
   const handleRestore = async (id, namaProduk) => {
     try {
       await api.post(`/produk/${id}/restore`);
-      
+
       // Show notification
       setNotification({
         type: 'success',
@@ -53,11 +53,11 @@ const ProdukDeaktif = () => {
   const getRemainingDays = (deactivatedAtStr) => {
     const deactivatedAt = new Date(deactivatedAtStr);
     const now = new Date();
-    
+
     // Difference in milliseconds
     const diffTime = now - deactivatedAt;
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    
+
     const remaining = 30 - diffDays;
     return remaining > 0 ? remaining : 0;
   };
@@ -80,11 +80,10 @@ const ProdukDeaktif = () => {
 
       {/* Global Notification */}
       {notification && (
-        <div className={`p-4 rounded-xl mb-6 border text-sm font-semibold flex items-center gap-3 animate-fade-in ${
-          notification.type === 'success' 
-            ? 'bg-teal-50 border-teal-100 text-teal-700' 
+        <div className={`p-4 rounded-xl mb-6 border text-sm font-semibold flex items-center gap-3 animate-fade-in ${notification.type === 'success'
+            ? 'bg-teal-50 border-teal-100 text-teal-700'
             : 'bg-rose-50 border-rose-100 text-rose-700'
-        }`}>
+          }`}>
           <AlertTriangle size={18} className="shrink-0" />
           <span>{notification.message}</span>
         </div>
@@ -125,7 +124,7 @@ const ProdukDeaktif = () => {
                 <th className="px-6 py-4 w-32 text-center">Kategori</th>
                 <th className="px-6 py-4 w-40 text-center">Harga</th>
                 <th className="px-6 py-4 w-48 text-center">Sisa Penangguhan</th>
-                <th className="px-6 py-4 w-32 text-right">Aksi</th>
+                <th className="px-6 py-4 w-32 text-center">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -156,7 +155,7 @@ const ProdukDeaktif = () => {
                       <td className="px-6 py-4 font-semibold text-dark">
                         {product.namaProduk}
                       </td>
-                      
+
                       {/* Category */}
                       <td className="px-6 py-4 text-gray-500 whitespace-nowrap text-center">
                         {product.kategori}
@@ -169,11 +168,10 @@ const ProdukDeaktif = () => {
 
                       {/* Remaining Days Countdown */}
                       <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${
-                          remaining <= 3 
-                            ? 'bg-rose-50 text-rose-700 border-rose-100' 
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${remaining <= 3
+                            ? 'bg-rose-50 text-rose-700 border-rose-100'
                             : 'bg-amber-50 text-amber-700 border-amber-100'
-                        }`}>
+                          }`}>
                           {remaining} Hari Lagi
                         </span>
                       </td>
