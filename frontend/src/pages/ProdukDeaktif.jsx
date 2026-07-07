@@ -125,7 +125,7 @@ const ProdukDeaktif = () => {
                 <th className="px-6 py-4 w-28">Kategori</th>
                 <th className="px-6 py-4 w-28">Harga</th>
                 <th className="px-6 py-4 whitespace-nowrap">Sisa Penangguhan</th>
-                <th className="px-6 py-4 w-24 text-center">Aksi</th>
+                <th className="px-6 py-4 w-24 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -179,7 +179,7 @@ const ProdukDeaktif = () => {
                       </td>
 
                       {/* Action Restore */}
-                      <td className="px-6 py-4 text-center whitespace-nowrap">
+                      <td className="px-6 py-4 text-right whitespace-nowrap">
                         <button
                           onClick={() => handleRestore(product.id, product.namaProduk)}
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 border border-teal-100 text-teal-700 hover:bg-teal-100 hover:border-teal-200 transition-all rounded-lg text-xs font-bold"
