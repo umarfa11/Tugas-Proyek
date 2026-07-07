@@ -122,10 +122,10 @@ const ProdukDeaktif = () => {
             <thead>
               <tr className="bg-gray-50/80 text-gray-500 font-semibold border-b border-gray-100">
                 <th className="px-6 py-4">Nama Produk</th>
-                <th className="px-6 py-4 w-28">Kategori</th>
-                <th className="px-6 py-4 w-28">Harga</th>
-                <th className="px-6 py-4 whitespace-nowrap">Sisa Penangguhan</th>
-                <th className="px-6 py-4 w-24 text-right">Aksi</th>
+                <th className="px-6 py-4 w-32 text-center">Kategori</th>
+                <th className="px-6 py-4 w-40 text-center">Harga</th>
+                <th className="px-6 py-4 w-48 text-center">Sisa Penangguhan</th>
+                <th className="px-6 py-4 w-32 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -158,17 +158,17 @@ const ProdukDeaktif = () => {
                       </td>
                       
                       {/* Category */}
-                      <td className="px-6 py-4 text-gray-500 whitespace-nowrap">
+                      <td className="px-6 py-4 text-gray-500 whitespace-nowrap text-center">
                         {product.kategori}
                       </td>
 
                       {/* Price */}
-                      <td className="px-6 py-4 font-semibold text-dark whitespace-nowrap">
+                      <td className="px-6 py-4 font-semibold text-dark whitespace-nowrap text-center">
                         Rp {Number(product.harga).toLocaleString('id-ID')}
                       </td>
 
                       {/* Remaining Days Countdown */}
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${
                           remaining <= 3 
                             ? 'bg-rose-50 text-rose-700 border-rose-100' 
