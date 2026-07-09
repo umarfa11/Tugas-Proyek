@@ -22,6 +22,8 @@ const Dashboard = () => {
   const [chartData, setChartData] = useState([]);
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [chartFilter, setChartFilter] = useState('tahunan');
+  const [rawRiwayat, setRawRiwayat] = useState([]);
 
   const formatRupiah = (num) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
@@ -65,26 +67,8 @@ const Dashboard = () => {
           pendapatanHariIni
         });
 
-        // --- Process Chart Data (Monthly for Current Year) ---
-        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-        const fullMonthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-
-        const yearlyData = monthNames.map((name, index) => ({
-          monthIndex: index,
-          name: name,
-          fullDate: `${fullMonthNames[index]} ${currentYear}`,
-          total: 0
-        }));
-
-        riwayat.forEach(item => {
-          const itemDate = new Date(item.completedAt);
-          if (itemDate.getFullYear() === currentYear) {
-            const monthIdx = itemDate.getMonth();
-            yearlyData[monthIdx].total += Number(item.totalHarga);
-          }
-        });
-
-        setChartData(yearlyData);
+        // --- Save raw data for filtering ---
+        setRawRiwayat(riwayat);
 
         // --- Recent Transactions ---
         const sorted = [...riwayat].sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
@@ -99,6 +83,79 @@ const Dashboard = () => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (!rawRiwayat || rawRiwayat.length === 0) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (chartFilter === 'mingguan') {
+      const weeklyData = [];
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+        weeklyData.push({
+          name: dayNames[d.getDay()],
+          fullDate: d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
+          total: 0,
+          dateValue: d.getTime()
+        });
+      }
+
+      rawRiwayat.forEach(item => {
+        const itemDate = new Date(item.completedAt);
+        itemDate.setHours(0, 0, 0, 0);
+        const target = weeklyData.find(w => w.dateValue === itemDate.getTime());
+        if (target) {
+          target.total += Number(item.totalHarga);
+        }
+      });
+      setChartData(weeklyData);
+
+    } else if (chartFilter === 'bulanan') {
+      const currentMonth = today.getMonth();
+      const currentYear = today.getFullYear();
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const monthlyData = [];
+      for (let i = 1; i <= daysInMonth; i++) {
+        monthlyData.push({
+          name: i.toString(),
+          fullDate: `${i} ${new Date(currentYear, currentMonth, 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}`,
+          total: 0,
+          dateValue: i
+        });
+      }
+
+      rawRiwayat.forEach(item => {
+        const itemDate = new Date(item.completedAt);
+        if (itemDate.getMonth() === currentMonth && itemDate.getFullYear() === currentYear) {
+          monthlyData[itemDate.getDate() - 1].total += Number(item.totalHarga);
+        }
+      });
+      setChartData(monthlyData);
+
+    } else if (chartFilter === 'tahunan') {
+      const currentYear = today.getFullYear();
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+      const fullMonthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      const yearlyData = monthNames.map((name, index) => ({
+        monthIndex: index,
+        name: name,
+        fullDate: `${fullMonthNames[index]} ${currentYear}`,
+        total: 0
+      }));
+
+      rawRiwayat.forEach(item => {
+        const itemDate = new Date(item.completedAt);
+        if (itemDate.getFullYear() === currentYear) {
+          yearlyData[itemDate.getMonth()].total += Number(item.totalHarga);
+        }
+      });
+      setChartData(yearlyData);
+    }
+  }, [chartFilter, rawRiwayat]);
 
   if (isLoading) {
     return (
@@ -229,9 +286,20 @@ const Dashboard = () => {
             <div>
               <h2 className="text-xl font-bold text-dark">Performance Overview</h2>
             </div>
-            <button className="px-4 py-1.5 bg-gray-50 border border-gray-100 text-dark rounded-full text-xs font-medium hover:bg-gray-100 transition-colors flex items-center gap-1">
-              Tahun Ini <ChevronDown size={14} className="text-gray-400" />
-            </button>
+            <div className="relative">
+              <select 
+                value={chartFilter}
+                onChange={(e) => setChartFilter(e.target.value)}
+                className="appearance-none px-4 py-1.5 pr-8 bg-gray-50 border border-gray-100 text-dark rounded-full text-xs font-medium hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+              >
+                <option value="mingguan">Mingguan</option>
+                <option value="bulanan">Bulanan</option>
+                <option value="tahunan">Tahunan</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
+                <ChevronDown size={14} className="text-gray-400" />
+              </div>
+            </div>
           </div>
 
           <div className="h-[300px] w-full mt-4">
