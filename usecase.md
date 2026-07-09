@@ -1,6 +1,6 @@
 # Use Case Diagram
 
-Berikut adalah representasi Use Case Diagram dalam format sintaks Mermaid JS, dibuat sama persis dengan alur dan struktur dari gambar yang Anda berikan.
+Berikut adalah representasi Use Case Diagram untuk aplikasi berdasarkan urutan yang diminta.
 
 ```mermaid
 flowchart LR
@@ -8,48 +8,49 @@ flowchart LR
     Kasir(("👤 Kasir"))
     SuperAdmin(("👤 Super Admin"))
 
-    %% Grup Use Case utama yang berjejer vertikal
+    %% Grup Use Case utama yang berjejer vertikal sesuai urutan
     subgraph Sistem [ ]
         direction TB
         style Sistem fill:none,stroke:none
         
-        Login(["Login"])
-        CRUD(["Mengelola CRUD"])
-        Input(["Input Pesanan & Nama Pembeli"])
-        Bayar(["Memilih Metode Pembayaran"])
-        FIFO(["Memantau Antrian FIFO"])
-        Riwayat(["Melihat Riwayat Penjualan"])
+        Login(["1. Login"])
+        Dashboard(["2. Dashboard"])
+        KelolaAkun(["3. Kelola Akun (CRUD)"])
+        KelolaProduk(["4. Kelola Produk (CRUD)"])
+        InputPesanan(["5. Input Pesanan & Metode Pembayaran"])
+        PantauFIFO(["6. Memantau FIFO"])
+        Riwayat(["7. Memantau Riwayat Penjualan"])
         
-        %% Panah vertikal di bagian tengah diagram
-        Login --> CRUD
-        CRUD --> Input
-        Input --> Bayar
-        Bayar --> FIFO
-        FIFO --> Riwayat
+        %% Panah vertikal di bagian tengah diagram menunjukkan urutan
+        Login --> Dashboard
+        Dashboard --> KelolaAkun
+        KelolaAkun --> KelolaProduk
+        KelolaProduk --> InputPesanan
+        InputPesanan --> PantauFIFO
+        PantauFIFO --> Riwayat
     end
 
-    %% Use Cases untuk Extend dan Include
-    Tunai(["Tunai"])
-    Qris(["Qris"])
-    Struk(["Cetak Struk Otomatis"])
+    %% Use Cases untuk Include
+    CetakStruk(["Cetak Struk"])
+    AntrianFIFO(["Masuk Antrian FIFO"])
 
     %% Garis relasi antara Kasir dengan Use Cases
     Kasir --- Login
-    Kasir --- CRUD
-    Kasir --- Input
-    Kasir --- Bayar
+    Kasir --- Dashboard
+    Kasir --- InputPesanan
+    Kasir --- PantauFIFO
     Kasir --- Riwayat
 
     %% Garis relasi antara Super Admin dengan Use Cases
     Login --- SuperAdmin
-    CRUD --- SuperAdmin
-    Input --- SuperAdmin
-    Bayar --- SuperAdmin
-    FIFO --- SuperAdmin
+    Dashboard --- SuperAdmin
+    KelolaAkun --- SuperAdmin
+    KelolaProduk --- SuperAdmin
+    InputPesanan --- SuperAdmin
+    PantauFIFO --- SuperAdmin
     Riwayat --- SuperAdmin
 
-    %% Garis relasi Extend & Include
-    Tunai -. "Extend" .-> Bayar
-    Qris -. "Extend" .-> Bayar
-    Bayar -. "Include" .-> Struk
+    %% Garis relasi Include
+    InputPesanan -. "<< include >>" .-> CetakStruk
+    InputPesanan -. "<< include >>" .-> AntrianFIFO
 ```

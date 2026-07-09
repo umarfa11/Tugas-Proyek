@@ -1,50 +1,41 @@
 # Activity Diagram: Login
 
-Berikut adalah representasi Activity Diagram dalam format sintaks Mermaid JS, dibuat sama persis dengan alur dan struktur dari gambar referensi Anda.
-
 ```mermaid
 flowchart TD
-    %% Pengaturan Swimlane Kasir / Super Admin
-    subgraph KSA [Kasir / Super Admin]
+    subgraph Aktor [Kasir / Super Admin]
         direction TB
-        start(( ))
-        BukaLogin(Buka Halaman Login)
-        InputUser(Input Username &<br>Password)
-        KlikLogin(Klik Tombol Login)
-        PesanError(Tampilkan Pesan<br>error)
+        Start(( ))
+        B1[Buka Halaman Login]
+        B2[Input Username & Password]
+        B3[Klik Tombol Login]
+        B4[Tampilkan Pesan error]
     end
 
-    %% Pengaturan Swimlane Sistem
-    subgraph SYS [Sistem]
+    subgraph Sistem [Sistem]
         direction TB
-        Autentikasi(Autentikasi)
-        Validasi{Autentikasi<br>Valid}
-        GenToken(Generate<br>Token JWT)
-        Redirect(Redirect ke<br>Dasboard)
-        finish((( )))
+        C1[Autentikasi]
+        C2{Autentikasi Valid}
+        C3[Generate Token JWT]
+        C4[Redirect ke Dasboard]
+        End((( )))
     end
 
-    %% Alur Proses (Flow)
-    start --> BukaLogin
-    BukaLogin --> InputUser
-    InputUser --> KlikLogin
-    
-    %% Menyeberang ke Sistem
-    KlikLogin --> Autentikasi
-    Autentikasi --> Validasi
-    
-    %% Percabangan (Decision)
-    Validasi -- Ya --> GenToken
-    Validasi -- Tidak --> PesanError
-    
-    %% Kembali ke Input (Looping/Retry)
-    PesanError --> InputUser
-    
-    %% Alur Sukses
-    GenToken --> Redirect
-    Redirect --> finish
-
-    %% Styling Start dan End Node agar hitam solid (UML Standard)
-    style start fill:#000,stroke:#000
-    style finish fill:#000,stroke:#333,stroke-width:2px
+    Start --> B1
+    B1 --> B2
+    B2 --> B3
+    B3 --> C1
+    C1 --> C2
+    C2 -- Tidak --> B4
+    B4 --> B2
+    C2 -- Ya --> C3
+    C3 --> C4
+    C4 --> End
 ```
+
+### Penjelasan:
+1. **Aktor** (Kasir / Super Admin) membuka halaman login.
+2. **Aktor** memasukkan *username* dan *password* lalu mengklik tombol login.
+3. **Sistem** melakukan autentikasi dengan mencocokkan data yang dimasukkan dengan database.
+4. Jika **Autentikasi Tidak Valid**, sistem akan menampilkan pesan error ke aktor, dan aktor harus memasukkan ulang kredensial.
+5. Jika **Autentikasi Valid**, sistem akan men-generate token JWT (Json Web Token) sebagai tanda sesi yang valid.
+6. **Sistem** akan me-redirect aktor ke halaman Dasboard dan proses login selesai.
