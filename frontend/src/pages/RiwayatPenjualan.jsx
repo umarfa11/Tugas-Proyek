@@ -10,6 +10,12 @@ import Modal from '../components/ui/Modal';
 import RekapStruk from '../components/RekapStruk';
 import api from '../services/api';
 
+const formatDateForDisplay = (dateString) => {
+  if (!dateString) return '';
+  const [year, month, day] = dateString.split('-');
+  return `${day}/${month}/${year}`;
+};
+
 const RiwayatPenjualan = () => {
   const [riwayat, setRiwayat] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -244,13 +250,25 @@ const RiwayatPenjualan = () => {
           </div>
           <div>
             <label className="text-xs font-medium text-gray-500 mb-1 block">Dari Tanggal</label>
-            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20" />
+            <div className="relative">
+              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
+                className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10" />
+              <div className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white flex justify-between items-center text-dark focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20">
+                <span>{startDate ? formatDateForDisplay(startDate) : 'dd/mm/yyyy'}</span>
+                <Calendar size={16} className="text-gray-400" />
+              </div>
+            </div>
           </div>
           <div>
             <label className="text-xs font-medium text-gray-500 mb-1 block">Sampai Tanggal</label>
-            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20" />
+            <div className="relative">
+              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
+                className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10" />
+              <div className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white flex justify-between items-center text-dark focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20">
+                <span>{endDate ? formatDateForDisplay(endDate) : 'dd/mm/yyyy'}</span>
+                <Calendar size={16} className="text-gray-400" />
+              </div>
+            </div>
           </div>
           <div>
             <label className="text-xs font-medium text-gray-500 mb-1 block">Metode</label>
