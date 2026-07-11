@@ -1,76 +1,67 @@
-# Penjelasan Teknologi dan Fitur Aplikasi "Kasir Baksoku"
+# Laporan Penjelasan Teknologi dan Fitur Aplikasi Kasir Baksoku
 
-Dokumen ini berisi rincian lengkap mengenai fitur-fitur yang tersedia serta teknologi (stack) yang digunakan pada pengembangan aplikasi **Kasir Baksoku** (Sistem Point of Sales & Manajemen Inventaris).
-
----
-
-## 🌟 Fitur Utama Aplikasi
-
-Aplikasi ini dirancang untuk mempermudah operasional kedai bakso dengan beberapa fitur unggulan:
-
-### 1. Sistem POS Berbasis FIFO (First-In-First-Out)
-- Sistem pemrosesan pesanan yang adil dengan memprioritaskan pesanan yang masuk lebih awal.
-- Membantu kasir dan dapur bekerja lebih terstruktur dan efisien.
-
-### 2. Monitor Antrean Dapur (Real-time)
-- Halaman antarmuka khusus untuk tim dapur.
-- Menampilkan daftar pesanan yang sedang aktif secara interaktif dan *real-time* sehingga tim dapur dapat segera menyiapkan hidangan.
-
-### 3. Manajemen Menu & Stok Barang
-- Pengelolaan daftar menu dan ketersediaan stok bahan.
-- **Fitur Penangguhan (Soft Delete/Arsip):** Menu yang dihapus tidak langsung hilang, melainkan diarsipkan selama 30 hari. Dalam masa ini, menu dapat dipulihkan kembali sebelum dihapus secara permanen oleh sistem.
-
-### 4. Riwayat & Rekap Penjualan
-- Pencatatan semua transaksi yang telah selesai.
-- **Laporan Visual:** Menyediakan laporan penjualan harian dan bulanan yang dilengkapi dengan grafik interaktif.
-- **Ubah Metode Pembayaran:** Memungkinkan perubahan metode pembayaran transaksi langsung melalui *dropdown* riwayat.
-- **Cetak Struk:** Mendukung pencetakan struk belanja (thermal/kertas biasa).
-- **Export Data:** Terdapat kemampuan integrasi pengunduhan data (menggunakan pustaka `xlsx`).
-
-### 5. Multi-Role User & Keamanan Akses
-- Terdapat sistem autentikasi dan pembagian hak akses pengguna.
-- **Super Admin:** Memiliki akses penuh untuk mengelola menu, mengatur akun pengguna, dan melihat laporan/rekap bisnis.
-- **Kasir:** Berfokus pada operasional kasir (POS), transaksi, dan monitor antrean.
+Dokumen ini merincikan spesifikasi teknologi, arsitektur sistem, dan deskripsi fungsionalitas fitur-fitur yang diterapkan pada aplikasi **Kasir Baksoku**. Sistem ini merupakan aplikasi *Point of Sales* (POS) dan manajemen inventaris berbasis web yang dikembangkan menggunakan arsitektur *Client-Server* modern.
 
 ---
 
-## 🛠️ Teknologi yang Digunakan (Tech Stack)
+## 1. Spesifikasi Teknologi Sistem (Tech Stack)
 
-Aplikasi ini dibangun menggunakan arsitektur *Client-Server* modern yang memisahkan antara *Frontend* dan *Backend*.
+Sistem dibangun menggunakan pendekatan pengembangan aplikasi modern berbasis *Full-Stack JavaScript/TypeScript* untuk memastikan performa yang cepat, interaktivitas tinggi, serta skalabilitas sistem dalam jangka panjang.
 
-### 💻 Frontend (Tampilan & Interaksi Pengguna)
-Bagian depan aplikasi dibangun menggunakan **Vite** dan **React.js** dengan ekosistem berikut:
+### 1.1 Front-End (Antarmuka Pengguna)
+Bagian antarmuka pengguna (Frontend) dibangun sebagai *Single Page Application* (SPA) dengan teknologi berikut:
+- **React.js (v19) via Vite (v8):** *Library* JavaScript utama yang digunakan untuk membangun antarmuka pengguna secara modular (berbasis komponen) dengan *Virtual DOM* untuk render performa tinggi. Penggunaan *bundler* Vite memberikan proses *Build* dan *Hot Module Replacement* (HMR) yang sangat cepat.
+- **Tailwind CSS (v4) & PostCSS (v8):** *Framework* CSS berbasis *utility-first* yang digunakan untuk penataan gaya visual antarmuka secara responsif, modern, dan konsisten tanpa perlu menulis file CSS eksternal secara ekstensif.
+- **Zustand (v5):** *State Management library* yang ringan dan cepat untuk mengelola *global state* aplikasi, seperti data pengguna yang sedang login (*auth state*), manajemen data keranjang (POS), dan state antrean UI tanpa terjadi masalah *prop-drilling* antar komponen.
+- **React Router DOM (v7):** Digunakan untuk manajemen rute aplikasi secara internal di sisi klien, memungkinkan perpindahan halaman tanpa *reload* secara penuh (*seamless navigation*).
+- **Axios:** *HTTP Client* berbasis *Promise* yang digunakan untuk melakukan komunikasi asinkron (pengiriman dan pengambilan data API) dari *Frontend* ke *Backend*.
+- **Recharts:** *Library* charting berbasis React yang dipakai untuk menghasilkan grafik interaktif pada halaman laporan (*Dashboard* dan *Riwayat Penjualan*) untuk menganalisis statistik bisnis.
+- **XLSX:** Modul tambahan yang digunakan untuk memproses manipulasi data dan ekspor laporan rekapitulasi penjualan ke format dokumen Excel.
+- **Lucide React:** Pustaka ikon *open-source* bervektor (SVG) untuk kebutuhan navigasi dan elemen antarmuka yang tajam di berbagai resolusi layar.
 
-| Teknologi | Fungsi / Kegunaan |
-| --- | --- |
-| **React.js (v19)** | *Library* utama untuk membangun antarmuka pengguna (UI) berbasis komponen. |
-| **Vite (v8)** | *Build tool* dan *dev server* yang sangat cepat untuk menjalankan proyek React. |
-| **TailwindCSS (v4)** | *Framework* CSS berbasis *utility-class* untuk *styling* dan desain responsif dengan cepat. |
-| **Zustand (v5)** | *State management* yang ringan dan efisien, digunakan (misalnya) untuk mengelola *state auth/login* pengguna. |
-| **React Router DOM (v7)** | Mengelola sistem navigasi dan perutean (*routing*) antar halaman (SPA). |
-| **Axios** | *HTTP Client* untuk melakukan permintaan data (API request) dari Frontend ke Backend. |
-| **Lucide React** | Kumpulan ikon SVG yang bersih dan modern untuk melengkapi antarmuka aplikasi. |
-| **Recharts** | *Library* untuk membuat grafik interaktif (digunakan pada fitur laporan penjualan). |
-| **XLSX** | *Library* untuk memproses dan mengekspor data ke format Excel (spreadsheet). |
+### 1.2 Back-End (Sisi Server)
+Bagian pemrosesan data, logika bisnis, dan pengolahan antarmuka *Application Programming Interface* (API) dibangun dengan teknologi berikut:
+- **Node.js & Express.js (v5):** *Runtime environment* dan *framework server-side* yang ringan serta efisien untuk menangani *request* HTTP secara asinkron (*non-blocking I/O*). Ini memfasilitasi pembuatan *RESTful API* yang stabil.
+- **Prisma ORM (v5):** *Object-Relational Mapping* modern berbasis *type-safe* yang menjembatani komunikasi antara kode backend dan database, memudahkan operasi CRUD (Create, Read, Update, Delete) dengan penulisan *query* yang intuitif, serta mendukung migrasi skema database yang terstruktur.
+- **Multer:** *Middleware* Node.js yang dikhususkan untuk menangani pemrosesan data berbasis `multipart/form-data`, yang diimplementasikan pada fitur unggah file (misal: foto produk/menu bakso).
+- **CORS & Dotenv:** Pengelolaan *Cross-Origin Resource Sharing* (CORS) untuk kebijakan keamanan pengaksesan API oleh domain *frontend*, serta penggunaan *Dotenv* untuk melindungi variabel rahasia (*environment variables*) di sisi *server*.
 
-### ⚙️ Backend (Server API & Logika Bisnis)
-Bagian belakang aplikasi (API) berjalan di atas lingkungan **Node.js** dengan ekosistem berikut:
-
-| Teknologi | Fungsi / Kegunaan |
-| --- | --- |
-| **Express.js (v5)** | *Framework* web untuk Node.js yang mempermudah pembuatan *endpoint* RESTful API dan *routing*. |
-| **Prisma ORM (v5)** | *Object-Relational Mapping* (ORM) modern untuk berinteraksi dengan database secara lebih aman dan mudah (Type-safe database client). |
-| **MySQL** | Sistem Manajemen Basis Data Relasional (RDBMS) yang digunakan untuk menyimpan seluruh data aplikasi (di-hosting melalui Aiven Cloud). |
-| **JSON Web Token (JWT)** | Digunakan untuk proses autentikasi dan otorisasi. Token akan diberikan setelah pengguna berhasil login. |
-| **Bcrypt** | *Library* enkripsi/hashing yang digunakan untuk mengamankan *password* pengguna di dalam database. |
-| **Multer** | *Middleware* Node.js untuk menangani *multipart/form-data*, utamanya digunakan untuk fitur unggah gambar/file (seperti foto menu). |
-| **Cors** | *Middleware* untuk mengatur kebijakan *Cross-Origin Resource Sharing* agar Frontend dapat mengakses API Backend dengan aman. |
-| **Dotenv** | Mengelola dan memuat variabel lingkungan (*environment variables*) dari file `.env`. |
+### 1.3 Basis Data & Keamanan Sistem
+- **Database Engine - MySQL (via Aiven Cloud):** Basis data relasional (*Relational Database Management System*/RDBMS) handal yang berjalan dalam ekosistem *Cloud (Aiven)* untuk mendukung manajemen data berskala besar, menjamin persistensi entitas, relasi antar tabel (Pesanan, Produk, Akun), serta tingkat ketersediaan (*availability*) data yang tinggi.
+- **JSON Web Token (JWT):** Standar otentikasi terenkripsi (RFC 7519) untuk mengelola sesi pengguna secara *stateless*. Setiap *request* dari *frontend* akan dilampirkan *token bearer* yang harus divalidasi oleh *middleware* *backend*.
+- **Bcrypt:** Algoritma fungsi *hash* kriptografi searah yang kuat (*salt and hash*) untuk mengenkripsi kata sandi pengguna secara aman sebelum disimpan di dalam basis data (mencegah eksploitasi data kredensial).
 
 ---
 
-## 📂 Struktur Arsitektur Singkat
+## 2. Deskripsi Fungsionalitas Fitur Aplikasi
 
-- **Frontend** berkomunikasi dengan **Backend** secara asinkron menggunakan format **JSON** via **Axios**.
-- **Backend** mengatur logika bisnis, melindungi *route* API dengan *middleware* berbasis **JWT**, dan melakukan kueri ke basis data **MySQL** menggunakan **Prisma**.
-- **Keamanan:** Kata sandi disimpan dalam bentuk *hash* (**Bcrypt**) untuk mencegah kebocoran data. Data-data rahasia seperti kunci database disembunyikan menggunakan *environment variables*.
+Aplikasi Kasir Baksoku dirancang untuk menjawab spesifikasi kebutuhan bisnis kuliner berbasis antrean cepat. Berikut adalah rincian fitur yang tersedia:
+
+### 2.1 Manajemen Akses dan Keamanan Multi-Role
+Sistem mengadopsi konsep *Role-Based Access Control* (RBAC) dengan pemisahan hak akses:
+- **Super Admin:** Memiliki kontrol absolut atas seluruh entitas sistem. Meliputi pengelolaan akun pengguna, pengelolaan master data menu, penetapan harga produk, dan akses penuh atas analisis data laporan operasional.
+- **Kasir:** Memiliki otoritas yang dibatasi pada operasional harian. Fokus utama pada modul operasional POS (pemrosesan pesanan), pencetakan struk pembayaran, dan halaman monitor pemantauan antrean.
+
+### 2.2 Sistem *Point of Sales* (POS) Berbasis Algoritma FIFO
+- **Penerapan Antrean First-In-First-Out (FIFO):** Setiap transaksi yang diselesaikan kasir secara otomatis akan dicetak ke dalam struktur antrean terurut berdasarkan waktu pemesanan (*timestamp*). Metode ini memastikan tingkat keadilan dalam pelayanan (pesanan yang masuk paling awal, dikerjakan paling awal oleh dapur).
+- **Proses Transaksi Cepat:** Antarmuka kasir yang dirancang reaktif dengan pencarian cepat produk, perhitungan kalkulasi otomatis (total belanja, pajak, dan kembalian), serta pemilihan jenis pembayaran yang dinamis.
+- **Pencetakan Struk Otomatis:** Fitur untuk mendemonstrasikan integrasi pencetakan struk transaksi, disesuaikan untuk kompatibilitas ukuran kertas struk *thermal*.
+
+### 2.3 Live Dashboard Monitor Antrean Dapur
+- **Pemantauan Pesanan Aktif:** Fitur layar sekunder khusus bagi karyawan dapur untuk memantau status semua pesanan masuk (Pending / Sedang Diproses).
+- **Sinkronisasi Waktu Nyata:** Mengoptimalkan koordinasi komunikasi visual dari kasir menuju dapur untuk menekan resiko kehilangan tiket pesanan atau salah urutan dalam meracik bahan bakso.
+
+### 2.4 Manajemen Inventaris, Menu, dan Stok
+- **Kontrol *Inventory* Produk:** Modul pengelolaan CRUD (*Create, Read, Update, Delete*) pada data produk. Meliputi manipulasi harga dasar, harga jual, nama menu, ketersediaan stok, hingga unggah foto produk.
+- **Sistem Penangguhan Data (*Soft Delete* / Arsip):** Sistem tidak langsung menghapus data menu secara permanen saat dilakukan eksekusi penghapusan. Menu tersebut dialihkan sementara waktu ke dalam sistem arsip atau **Penangguhan Menu (Deaktivasi 30 Hari)**.
+  - *Recovery Data:* Dalam kurun waktu 30 hari, admin dapat memulihkan kembali (*restore*) menu tersebut sehingga dapat ditayangkan di layar kasir kembali.
+  - *Hard Delete Otomatis:* Pembersihan permanen akan dilakukan pasca kadaluarsa 30 hari untuk menjaga performa optimisasi *database*.
+
+### 2.5 Sistem Riwayat dan Pelaporan Analitik Penjualan
+- **Rekam Jejak (*History*) Transaksi Harian:** Pencatatan komprehensif setiap faktur penjualan yang terjadi. Admin dan kasir dapat mencari, memfilter, serta mereview transaksi masa lalu.
+- **Perubahan Metode Pembayaran Instan:** Adanya fitur operasional korektif, memungkinkan perubahan status atau metode pembayaran (contoh: dari *Cash* ke QRIS) secara langsung melalui *dropdown* riwayat tanpa menghapus transaksi awal.
+- **Laporan Visual dan Statistik Harian/Bulanan:** Visualisasi ringkasan kinerja penjualan dari waktu ke waktu secara interaktif dengan **Grafik Analitik (Recharts)**. Mengklasifikasikan data pendapatan kotor, keuntungan, serta kuantitas produk yang paling laris (*Best Seller*).
+- **Export Data Operasional:** Didukung dengan kapabilitas konversi dan pengunduhan tabel riwayat transaksi/pelaporan keuangan langsung ke dalam format dokumen pengolah angka (*Excel / .xlsx*) untuk mempermudah perhitungan laporan akuntansi (*Buku Besar*) di luar sistem.
+
+---
+*Dokumen ini disusun untuk merepresentasikan kerangka konseptual serta detail arsitektur teknis dari pengembangan proyek skripsi Kasir Baksoku.*
