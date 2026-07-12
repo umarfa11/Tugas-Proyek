@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
   ListOrdered, Clock, CheckCircle2, ArrowRight, 
-  RefreshCw, User, Timer, Package
+  RefreshCw, User, Timer, Soup
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import api from '../services/api';
@@ -136,7 +136,7 @@ const MonitorAntrian = () => {
                   <div className="flex flex-wrap gap-2 mb-4">
                     {item.detailPesanan?.map((detail, idx) => (
                       <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-50 rounded-lg text-xs text-gray-600">
-                        <Package size={12} className="text-gray-400" />
+                        <Soup size={12} className="text-gray-400" />
                         {detail.produk?.namaProduk} x{detail.jumlah}
                       </span>
                     ))}

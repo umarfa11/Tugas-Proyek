@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Search, ShoppingCart, Plus, Minus, Trash2, User, 
-  Banknote, QrCode, Package, ArrowRight, X, CheckCircle2,
+  Banknote, QrCode, Soup, ArrowRight, X, CheckCircle2,
   Utensils, Coffee, CakeSlice, MoreHorizontal, Receipt
 } from 'lucide-react';
 import Input from '../components/ui/Input';
@@ -186,7 +186,7 @@ const InputPesanan = () => {
       case 'Minuman': return { icon: Coffee, color: 'text-secondary', bg: 'bg-secondary/10', cardBg: 'bg-white', border: 'border-gray-100 hover:border-secondary/30' };
       case 'Dessert': return { icon: CakeSlice, color: 'text-primary', bg: 'bg-primary/10', cardBg: 'bg-white', border: 'border-gray-100 hover:border-primary/30' };
       case 'Lainnya': return { icon: MoreHorizontal, color: 'text-secondary', bg: 'bg-secondary/10', cardBg: 'bg-white', border: 'border-gray-100 hover:border-secondary/30' };
-      default: return { icon: Package, color: 'text-dark', bg: 'bg-gray-100', cardBg: 'bg-white', border: 'border-gray-100 hover:border-gray-300' };
+      default: return { icon: Soup, color: 'text-dark', bg: 'bg-gray-100', cardBg: 'bg-white', border: 'border-gray-100 hover:border-gray-300' };
     }
   };
 
@@ -208,7 +208,7 @@ const InputPesanan = () => {
           <div className="flex gap-2 overflow-x-auto scrollbar-hide w-full sm:w-auto py-1">
             {['Semua', 'Makanan', 'Minuman', 'Dessert', 'Lainnya'].map((cat) => {
               const meta = getCategoryMeta(cat);
-              const Icon = cat === 'Semua' ? Package : meta.icon;
+              const Icon = cat === 'Semua' ? Soup : meta.icon;
               return (
                 <button
                   key={cat}
@@ -235,7 +235,7 @@ const InputPesanan = () => {
             </div>
           ) : filteredProduk.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-gray-400 bg-white/50 rounded-3xl border border-dashed border-gray-200">
-              <Package size={48} className="mb-3 text-gray-300" />
+              <Soup size={48} className="mb-3 text-gray-300" />
               <span className="font-medium text-lg">Menu tidak ditemukan</span>
             </div>
           ) : (
