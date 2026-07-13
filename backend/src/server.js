@@ -27,7 +27,12 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to KASIR BAKSOKU API' });
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Start Server (Hanya dijalankan jika tidak di lingkungan Vercel)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
+
+// Export untuk Vercel Serverless Function
+module.exports = app;
