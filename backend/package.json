@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "postinstall": "npx prisma generate"
+    "postinstall": "npx prisma generate",
+    "vercel-build": "prisma generate"
   },
   "keywords": [],
   "author": "",
