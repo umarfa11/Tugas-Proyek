@@ -2,10 +2,17 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Pastikan folder uploads ada
-const uploadDir = path.join(__dirname, '../../uploads');
+// Pastikan folder uploads ada (Gunakan /tmp di Vercel karena filesystem read-only)
+const uploadDir = process.env.NODE_ENV === 'production' 
+  ? '/tmp/uploads' 
+  : path.join(__dirname, '../../uploads');
+
 if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+  try {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  } catch (error) {
+    console.error("Gagal membuat folder uploads:", error);
+  }
 }
 
 // Konfigurasi penyimpanan multer
