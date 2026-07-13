@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Search, Package, AlertTriangle, RotateCcw, Bell, Image as ImageIcon, Upload, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Soup, AlertTriangle, RotateCcw, Bell, Image as ImageIcon, Upload, X, ChevronDown, ChevronUp } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Modal from '../components/ui/Modal';
@@ -307,7 +307,7 @@ const KelolaProduk = () => {
                 <tr>
                   <td colSpan="7" className="px-6 py-16 text-center text-gray-400">
                     <div className="flex flex-col items-center gap-2">
-                      <Package size={36} className="text-gray-300" />
+                      <Soup size={36} className="text-gray-300" />
                       <span>Belum ada data produk aktif</span>
                     </div>
                   </td>
@@ -356,10 +356,13 @@ const KelolaProduk = () => {
                         </button>
                         <button
                           onClick={() => handleDeleteConfirm(produk)}
-                          className="p-2 rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
+                          className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-emerald-500 hover:bg-emerald-600"
                           title="Nonaktifkan Produk"
                         >
-                          <Trash2 size={16} />
+                          <span
+                            aria-hidden="true"
+                            className="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-4"
+                          />
                         </button>
                       </div>
                     </td>
@@ -385,7 +388,7 @@ const KelolaProduk = () => {
           )}
           <Input
             label="Nama Produk"
-            icon={Package}
+            icon={Soup}
             placeholder="Contoh: Bakso Urat"
             value={formData.namaProduk}
             onChange={(e) => setFormData({ ...formData, namaProduk: e.target.value })}

@@ -4,7 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import {
-  Package, ShoppingCart, ListOrdered, History, ArrowRight, TrendingUp, DollarSign, Activity, ChevronDown, SlidersHorizontal
+  Soup, ShoppingCart, ListOrdered, History, ArrowRight, TrendingUp, DollarSign, Activity, ChevronDown, SlidersHorizontal
 } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 import api from '../services/api';
@@ -267,11 +267,11 @@ const Dashboard = () => {
                 <h3 className="text-3xl font-bold text-dark tracking-tight">{stats.produk}</h3>
               </div>
               <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-purple-50 text-purple-600 px-2 py-1 rounded-md">
-                <Package size={12} /> Active
+                <Soup size={12} /> Active
               </span>
             </div>
             <div className="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center shrink-0">
-              <Package size={22} className="text-purple-500" />
+              <Soup size={22} className="text-purple-500" />
             </div>
           </div>
         </div>

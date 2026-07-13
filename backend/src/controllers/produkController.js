@@ -30,7 +30,13 @@ const cleanupDeactivatedProducts = async () => {
         });
         if (itemData && itemData.gambar) {
           const imagePath = path.join(__dirname, '../../uploads', itemData.gambar);
-          if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+          try {
+            if (fs.existsSync(imagePath) && fs.lstatSync(imagePath).isFile()) {
+              fs.unlinkSync(imagePath);
+            }
+          } catch (fileErr) {
+            console.error(`[CLEANUP] Failed to delete image file ${itemData.gambar}:`, fileErr);
+          }
         }
         console.log(`[CLEANUP] Product ID ${item.id} permanently deleted.`);
       } catch (err) {
@@ -126,13 +132,25 @@ const updateProduk = async (req, res) => {
       dataToUpdate.gambar = req.file.filename;
       if (existing.gambar) {
         const oldPath = path.join(__dirname, '../../uploads', existing.gambar);
-        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        try {
+          if (fs.existsSync(oldPath) && fs.lstatSync(oldPath).isFile()) {
+            fs.unlinkSync(oldPath);
+          }
+        } catch (fileErr) {
+          console.error("Failed to delete old image file:", fileErr);
+        }
       }
     } else if (req.body.removeImage === 'true') {
       dataToUpdate.gambar = null;
       if (existing.gambar) {
         const oldPath = path.join(__dirname, '../../uploads', existing.gambar);
-        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        try {
+          if (fs.existsSync(oldPath) && fs.lstatSync(oldPath).isFile()) {
+            fs.unlinkSync(oldPath);
+          }
+        } catch (fileErr) {
+          console.error("Failed to delete old image file:", fileErr);
+        }
       }
     }
 

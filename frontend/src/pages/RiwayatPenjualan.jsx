@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   History, Search, Calendar, Filter, ChevronDown, ChevronUp,
-  User, Clock, Banknote, QrCode, Package, Printer, Eye, EyeOff, CheckCircle2, Download
+  User, Clock, Banknote, QrCode, Soup, Printer, Eye, EyeOff, CheckCircle2, Download
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import Input from '../components/ui/Input';
@@ -372,7 +372,7 @@ const RiwayatPenjualan = () => {
                         {detailData.detailPesanan?.map((detail, idx) => (
                           <div key={idx} className="flex items-center justify-between text-sm">
                             <div className="flex items-center gap-2">
-                              <Package size={14} className="text-gray-400" />
+                              <Soup size={14} className="text-gray-400" />
                               <span className="text-dark">{detail.produk?.namaProduk}</span>
                             </div>
                             <div className="flex items-center gap-4 text-gray-500">
