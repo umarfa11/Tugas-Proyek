@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 // Pastikan folder uploads ada (Gunakan /tmp di Vercel karena filesystem read-only)
-const uploadDir = process.env.NODE_ENV === 'production' 
+const uploadDir = process.env.VERCEL 
   ? '/tmp/uploads' 
   : path.join(__dirname, '../../uploads');
 

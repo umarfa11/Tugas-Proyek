@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const uploadDir = process.env.NODE_ENV === 'production' 
+const uploadDir = process.env.VERCEL 
   ? '/tmp/uploads' 
   : path.join(__dirname, '../uploads');
 app.use('/uploads', express.static(uploadDir));
