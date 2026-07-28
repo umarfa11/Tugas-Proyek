@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Search, ShoppingCart, Plus, Minus, Trash2, User, 
-  Banknote, QrCode, Package, ArrowRight, X, CheckCircle2,
+  Banknote, QrCode, Soup, ArrowRight, X, CheckCircle2,
   Utensils, Coffee, CakeSlice, MoreHorizontal, Receipt
 } from 'lucide-react';
 import Input from '../components/ui/Input';
@@ -45,6 +45,9 @@ const InputPesanan = () => {
   // Receipt
   const [strukData, setStrukData] = useState(null);
   const [isStrukOpen, setIsStrukOpen] = useState(false);
+  
+  // Mobile Cart Drawer
+  const [isCartMobileOpen, setIsCartMobileOpen] = useState(false);
 
   // Fetch products
   useEffect(() => {
@@ -116,8 +119,12 @@ const InputPesanan = () => {
 
   // Open payment modal
   const handleOpenPayment = () => {
-    if (!namaPembeli.trim()) return;
     if (cart.length === 0) return;
+    
+    if (!namaPembeli.trim()) {
+      setNamaPembeli('Pelanggan');
+    }
+    
     setPaymentError('');
     setNominalDiterima('');
     setMetodeBayar('tunai');
@@ -179,12 +186,12 @@ const InputPesanan = () => {
       case 'Minuman': return { icon: Coffee, color: 'text-secondary', bg: 'bg-secondary/10', cardBg: 'bg-white', border: 'border-gray-100 hover:border-secondary/30' };
       case 'Dessert': return { icon: CakeSlice, color: 'text-primary', bg: 'bg-primary/10', cardBg: 'bg-white', border: 'border-gray-100 hover:border-primary/30' };
       case 'Lainnya': return { icon: MoreHorizontal, color: 'text-secondary', bg: 'bg-secondary/10', cardBg: 'bg-white', border: 'border-gray-100 hover:border-secondary/30' };
-      default: return { icon: Package, color: 'text-dark', bg: 'bg-gray-100', cardBg: 'bg-white', border: 'border-gray-100 hover:border-gray-300' };
+      default: return { icon: Soup, color: 'text-dark', bg: 'bg-gray-100', cardBg: 'bg-white', border: 'border-gray-100 hover:border-gray-300' };
     }
   };
 
   return (
-    <div className="flex h-[calc(100vh-6rem)] gap-6">
+    <div className="flex flex-col lg:flex-row h-[calc(100vh-6rem)] lg:gap-6 relative">
       {/* ===== LEFT: Product Grid ===== */}
       <div className="flex-1 flex flex-col min-w-0">
         <div className="mb-6">
@@ -201,7 +208,7 @@ const InputPesanan = () => {
           <div className="flex gap-2 overflow-x-auto scrollbar-hide w-full sm:w-auto py-1">
             {['Semua', 'Makanan', 'Minuman', 'Dessert', 'Lainnya'].map((cat) => {
               const meta = getCategoryMeta(cat);
-              const Icon = cat === 'Semua' ? Package : meta.icon;
+              const Icon = cat === 'Semua' ? Soup : meta.icon;
               return (
                 <button
                   key={cat}
@@ -220,7 +227,7 @@ const InputPesanan = () => {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto pr-2 pb-6">
+        <div className="flex-1 overflow-y-auto pb-32 lg:pb-6 scrollbar-hide">
           {isLoadingProduk ? (
             <div className="flex flex-col items-center justify-center h-64">
               <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4" />
@@ -228,11 +235,11 @@ const InputPesanan = () => {
             </div>
           ) : filteredProduk.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-gray-400 bg-white/50 rounded-3xl border border-dashed border-gray-200">
-              <Package size={48} className="mb-3 text-gray-300" />
+              <Soup size={48} className="mb-3 text-gray-300" />
               <span className="font-medium text-lg">Menu tidak ditemukan</span>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pt-3 pr-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 pt-3">
               {filteredProduk.map(produk => {
                 const inCart = cart.find(c => c.produkId === produk.id);
                 const isOutOfStock = produk.stok <= 0;
@@ -244,38 +251,53 @@ const InputPesanan = () => {
                     key={produk.id}
                     onClick={() => !isOutOfStock && addToCart(produk)}
                     disabled={isOutOfStock}
-                    className={`relative text-left p-5 rounded-2xl border transition-all duration-200 group
+                    className={`relative flex flex-col text-left rounded-3xl border overflow-hidden transition-all duration-300 group
                       ${isOutOfStock
                         ? 'bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed grayscale'
-                        : `${meta.cardBg} ${meta.border} hover:shadow-lg hover:-translate-y-0.5 cursor-pointer`
+                        : `bg-white border-gray-100 hover:border-primary/30 hover:shadow-xl hover:-translate-y-1 cursor-pointer`
                       }
                     `}
                   >
                     {inCart && (
-                      <div className="absolute -top-3 -right-3 w-7 h-7 bg-dark text-white text-xs font-black rounded-full flex items-center justify-center shadow-lg ring-2 ring-white animate-fade-in z-10">
+                      <div className="absolute top-3 right-3 w-8 h-8 bg-dark text-white text-sm font-black rounded-full flex items-center justify-center shadow-lg ring-2 ring-white animate-fade-in z-20">
                         {inCart.jumlah}
                       </div>
                     )}
                     
-                    <div className="flex justify-between items-start mb-4">
-                      <div className={`w-12 h-12 rounded-2xl ${meta.bg} flex items-center justify-center transition-transform group-hover:scale-110 duration-300`}>
-                        <Icon size={24} className={meta.color} />
-                      </div>
-                      <span className={`text-[10px] font-extrabold uppercase px-2 py-1 rounded-full ${isOutOfStock ? 'bg-red-100 text-red-600' : 'bg-white/60 text-gray-600'}`}>
-                        Sisa {produk.stok}
-                      </span>
-                    </div>
-                    
-                    <h3 className="font-bold text-dark text-base leading-tight mb-1 group-hover:text-primary transition-colors">{produk.namaProduk}</h3>
-                    <p className="text-gray-500 font-semibold text-sm mb-3 opacity-80">{produk.kategori || 'Makanan'}</p>
-                    
-                    <div className="flex items-center justify-between mt-auto">
-                      <p className="text-dark font-black text-lg">{formatRupiah(produk.harga)}</p>
-                      {!isOutOfStock && (
-                        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm text-gray-400 group-hover:text-primary group-hover:bg-primary/10 transition-colors">
-                          <Plus size={16} strokeWidth={3} />
+                    {/* Image Header */}
+                    <div className="relative w-full h-40 sm:h-48 bg-gray-50 overflow-hidden shrink-0">
+                      {produk.gambar ? (
+                        <img 
+                          src={`/uploads/${produk.gambar}`} 
+                          alt={produk.namaProduk}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      ) : (
+                        <div className={`w-full h-full flex items-center justify-center ${meta.bg} transition-transform duration-700 group-hover:scale-110`}>
+                          <Icon size={48} className={`${meta.color} opacity-40`} />
                         </div>
                       )}
+                      
+                      <div className="absolute top-3 left-3 z-10">
+                        <span className={`text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full shadow-sm backdrop-blur-md ${isOutOfStock ? 'bg-red-500/90 text-white' : 'bg-white/90 text-gray-700'}`}>
+                          Sisa {produk.stok}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="p-4 flex-1 flex flex-col w-full">
+                      <h3 className="font-bold text-dark text-base leading-tight mb-1 group-hover:text-primary transition-colors line-clamp-2">{produk.namaProduk}</h3>
+                      <p className="text-gray-500 font-medium text-xs mb-3">{produk.kategori || 'Makanan'}</p>
+                      
+                      <div className="flex items-center justify-between mt-auto pt-2">
+                        <p className="text-dark font-black text-lg">{formatRupiah(produk.harga)}</p>
+                        {!isOutOfStock && (
+                          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                            <Plus size={18} strokeWidth={3} />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </button>
                 );
@@ -285,9 +307,36 @@ const InputPesanan = () => {
         </div>
       </div>
 
+      {/* Mobile Floating Cart Button (FAB) */}
+      <div className="lg:hidden fixed bottom-20 right-4 z-40">
+        <button 
+          onClick={() => setIsCartMobileOpen(true)}
+          className="relative w-14 h-14 bg-gradient-to-r from-primary to-rose-400 text-white rounded-full shadow-xl shadow-primary/30 flex items-center justify-center active:scale-95 transition-transform"
+        >
+          <ShoppingCart size={24} />
+          {cart.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-dark text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+              {cart.reduce((s, i) => s + i.jumlah, 0)}
+            </span>
+          )}
+        </button>
+      </div>
+
       {/* ===== RIGHT: Digital Receipt Cart ===== */}
-      <div className="w-96 bg-gradient-to-br from-white to-gray-50/80 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border border-gray-100">
-        
+      <div 
+        id="cart-section" 
+        className={`fixed inset-y-0 right-0 z-50 w-full sm:w-[400px] bg-white shadow-2xl flex flex-col transition-transform duration-300 
+          ${isCartMobileOpen ? 'translate-x-0' : 'translate-x-full'}
+          lg:relative lg:translate-x-0 lg:w-96 lg:min-w-[384px] lg:bg-gradient-to-br lg:from-white lg:to-gray-50/80 lg:rounded-2xl lg:shadow-sm lg:border lg:border-gray-100 lg:z-auto
+        `}
+      >
+        {/* Mobile Close Button */}
+        <button 
+          onClick={() => setIsCartMobileOpen(false)} 
+          className="lg:hidden absolute top-4 right-4 p-2.5 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 z-10"
+        >
+          <X size={20} />
+        </button>
         {/* Cart Header */}
         <div className="px-5 py-4 text-center border-b border-gray-100">
           <div className="inline-flex items-center justify-center w-10 h-10 bg-primary/10 rounded-xl text-primary mb-2">
@@ -360,10 +409,10 @@ const InputPesanan = () => {
             <span className="text-2xl font-bold text-primary">{formatRupiah(totalHarga)}</span>
           </div>
           <button
-            disabled={cart.length === 0 || !namaPembeli.trim()}
+            disabled={cart.length === 0}
             onClick={handleOpenPayment}
             className={`w-full py-3 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all duration-200
-              ${cart.length === 0 || !namaPembeli.trim()
+              ${cart.length === 0
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : 'bg-gradient-to-r from-primary to-rose-400 text-white shadow-md shadow-primary/20 hover:shadow-lg hover:-translate-y-0.5'
               }

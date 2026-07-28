@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
   ListOrdered, Clock, CheckCircle2, ArrowRight, 
-  RefreshCw, User, Timer, Package
+  RefreshCw, User, Timer, Soup
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import api from '../services/api';
@@ -88,7 +88,7 @@ const MonitorAntrian = () => {
           <p className="text-sm text-gray-300 mt-1">Semua pesanan sudah selesai diproses</p>
         </div>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {antrian.map((item, index) => (
             <div 
               key={item.id} 
@@ -96,9 +96,9 @@ const MonitorAntrian = () => {
                 index === 0 ? 'border-primary/30 ring-2 ring-primary/10' : 'border-gray-100'
               }`}
             >
-              <div className="flex items-stretch">
+              <div className="flex flex-col sm:flex-row items-stretch">
                 {/* Queue Number */}
-                <div className={`w-28 flex flex-col items-center justify-center py-6 ${
+                <div className={`w-full sm:w-28 flex flex-col items-center justify-center py-4 sm:py-6 ${
                   index === 0 ? 'bg-primary/10' : 'bg-gray-50'
                 }`}>
                   <span className="text-[10px] uppercase tracking-widest text-gray-400 font-semibold mb-1">Antrian</span>
@@ -136,7 +136,7 @@ const MonitorAntrian = () => {
                   <div className="flex flex-wrap gap-2 mb-4">
                     {item.detailPesanan?.map((detail, idx) => (
                       <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-50 rounded-lg text-xs text-gray-600">
-                        <Package size={12} className="text-gray-400" />
+                        <Soup size={12} className="text-gray-400" />
                         {detail.produk?.namaProduk} x{detail.jumlah}
                       </span>
                     ))}

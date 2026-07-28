@@ -21,7 +21,7 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Overlay */}
       <div 
         className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
@@ -29,9 +29,9 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
       />
       
       {/* Modal Content */}
-      <div className={`relative ${sizes[size]} w-full mx-4 bg-white rounded-2xl shadow-2xl transform transition-all animate-fade-in`}>
+      <div className={`relative ${sizes[size]} w-full max-h-full flex flex-col bg-white rounded-2xl shadow-2xl transform transition-all animate-fade-in`}>
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
           <h2 className="text-lg font-bold text-dark">{title}</h2>
           <button 
             onClick={onClose}
@@ -42,7 +42,7 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
         </div>
         
         {/* Body */}
-        <div className="px-6 py-4">
+        <div className="px-6 py-4 overflow-y-auto">
           {children}
         </div>
       </div>

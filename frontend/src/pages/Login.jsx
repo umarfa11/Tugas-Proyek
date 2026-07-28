@@ -48,11 +48,15 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-white text-dark font-sans overflow-hidden">
+    <div className="min-h-screen w-full flex bg-slate-50 text-dark font-sans overflow-hidden">
       
       {/* Left Column - Login Form */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 lg:px-24 xl:px-32 relative z-10 animate-fade-in">
-        <div className="w-full max-w-md mx-auto">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 lg:px-24 xl:px-32 relative z-10 animate-fade-in bg-gradient-to-tr from-slate-50 via-white to-primary/10">
+        {/* Subtle decorative background glow circles */}
+        <div className="absolute top-[-20%] left-[-20%] w-[60%] h-[60%] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] rounded-full bg-secondary/5 blur-[120px] pointer-events-none" />
+        
+        <div className="w-full max-w-md mx-auto relative z-10">
           {/* Logo & Header */}
           <div className="mb-12">
             <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 ring-1 ring-primary/20 shadow-sm">
