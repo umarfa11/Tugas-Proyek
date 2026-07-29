@@ -323,6 +323,18 @@ const KelolaProduk = () => {
                           alt={produk.namaProduk} 
                           className="w-12 h-12 object-cover rounded-lg border border-gray-100"
                         />
+                      ) : produk.kategori === 'Makanan' ? (
+                        <img 
+                          src="/logo-makanan.jpg"
+                          alt={produk.namaProduk} 
+                          className="w-12 h-12 object-cover rounded-lg border border-gray-100"
+                        />
+                      ) : produk.kategori === 'Minuman' ? (
+                        <img 
+                          src="/logo-minuman.jpg"
+                          alt={produk.namaProduk} 
+                          className="w-12 h-12 object-cover rounded-lg border border-gray-100"
+                        />
                       ) : (
                         <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100 text-gray-300">
                           <ImageIcon size={20} />
