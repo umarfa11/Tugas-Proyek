@@ -9,6 +9,8 @@ import MonitorAntrian from './pages/MonitorAntrian';
 import RiwayatPenjualan from './pages/RiwayatPenjualan';
 import KelolaUser from './pages/KelolaUser';
 import ProdukDeaktif from './pages/ProdukDeaktif';
+import KelolaPengeluaran from './pages/KelolaPengeluaran';
+import LabaRugi from './pages/LabaRugi';
 
 import Dashboard from './pages/Dashboard';
 
@@ -77,6 +79,16 @@ function App() {
         <Route path="/admin/produk-deaktif" element={
           <ProtectedRoute allowedRoles={['super_admin']}>
             <AdminLayout><ProdukDeaktif /></AdminLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/pengeluaran" element={
+          <ProtectedRoute allowedRoles={['super_admin']}>
+            <AdminLayout><KelolaPengeluaran /></AdminLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/laba-rugi" element={
+          <ProtectedRoute allowedRoles={['super_admin']}>
+            <AdminLayout><LabaRugi /></AdminLayout>
           </ProtectedRoute>
         } />
 

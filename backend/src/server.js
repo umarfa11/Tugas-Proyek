@@ -20,11 +20,15 @@ const authRoutes = require('./routes/auth.routes');
 const produkRoutes = require('./routes/produk.routes');
 const pesananRoutes = require('./routes/pesanan.routes');
 const riwayatRoutes = require('./routes/riwayat.routes');
+const pengeluaranRoutes = require('./routes/pengeluaran.routes');
+const labaRugiRoutes = require('./routes/labaRugi.routes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/produk', produkRoutes);
 app.use('/api/pesanan', pesananRoutes);
 app.use('/api/riwayat', riwayatRoutes);
+app.use('/api/pengeluaran', pengeluaranRoutes);
+app.use('/api/laba-rugi', labaRugiRoutes);
 
 // Basic Route for testing
 app.get('/', (req, res) => {

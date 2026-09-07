@@ -43,6 +43,7 @@ model Produk {
   id            Int             @id @default(autoincrement())
   namaProduk    String          @map("nama_produk") @db.VarChar(100)
   kategori      String          @default("Makanan") @db.VarChar(50)
+  hargaModal    Decimal         @default(0) @map("harga_modal") @db.Decimal(10, 2)
   harga         Decimal         @db.Decimal(10, 2)
   stok          Int
   gambar        String?         @db.VarChar(255)
@@ -99,4 +100,15 @@ model Pembayaran {
   pesanan          Pesanan          @relation(fields: [pesananId], references: [id])
 
   @@map("pembayaran")
+}
+
+model Pengeluaran {
+  id         Int      @id @default(autoincrement())
+  tanggal    DateTime @default(now())
+  keterangan String   @db.VarChar(255)
+  nominal    Decimal  @db.Decimal(10, 2)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("pengeluaran")
 }

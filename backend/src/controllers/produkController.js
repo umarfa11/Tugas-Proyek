@@ -1,6 +1,18 @@
 const prisma = require('../config/db');
 const fs = require('fs');
 const path = require('path');
+const cloudinary = require('cloudinary').v2;
+
+// Fungsi bantuan untuk mengekstrak public_id dari URL Cloudinary
+const extractPublicId = (url) => {
+  if (!url) return null;
+  // Contoh URL: https://res.cloudinary.com/demo/image/upload/v1234567890/tugas-proyek-produk/produk-12345.jpg
+  const parts = url.split('/');
+  const filename = parts[parts.length - 1]; // produk-12345.jpg
+  const folder = parts[parts.length - 2]; // tugas-proyek-produk
+  const publicId = filename.split('.')[0];
+  return `${folder}/${publicId}`;
+};
 
 // Background job to clean up deactivated products older than 30 days
 const cleanupDeactivatedProducts = async () => {
@@ -15,7 +27,7 @@ const cleanupDeactivatedProducts = async () => {
           lt: thirtyDaysAgo
         }
       },
-      select: { id: true }
+      select: { id: true, gambar: true }
     });
 
     if (productsToDelete.length === 0) return;
@@ -24,19 +36,15 @@ const cleanupDeactivatedProducts = async () => {
 
     for (const item of productsToDelete) {
       try {
-        const itemData = await prisma.produk.findUnique({ where: { id: item.id }});
         await prisma.produk.delete({
           where: { id: item.id }
         });
-        if (itemData && itemData.gambar) {
-          const imagePath = path.join(__dirname, '../../uploads', itemData.gambar);
-          try {
-            if (fs.existsSync(imagePath) && fs.lstatSync(imagePath).isFile()) {
-              fs.unlinkSync(imagePath);
-            }
-          } catch (fileErr) {
-            console.error(`[CLEANUP] Failed to delete image file ${itemData.gambar}:`, fileErr);
-          }
+        
+        if (item.gambar && item.gambar.includes('cloudinary')) {
+           const publicId = extractPublicId(item.gambar);
+           if (publicId) {
+             await cloudinary.uploader.destroy(publicId);
+           }
         }
         console.log(`[CLEANUP] Product ID ${item.id} permanently deleted.`);
       } catch (err) {
@@ -84,19 +92,21 @@ const getDeactivatedProduk = async (req, res) => {
 
 const createProduk = async (req, res) => {
   try {
-    const { namaProduk, harga, stok, kategori } = req.body;
+    const { namaProduk, harga, hargaModal, stok, kategori } = req.body;
     
     if (!namaProduk || harga == null || stok == null || !kategori) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
-    const gambar = req.file ? req.file.filename : null;
+    // req.file.path berisi URL gambar dari Cloudinary
+    const gambar = req.file ? req.file.path : null;
 
     const produk = await prisma.produk.create({
       data: {
         namaProduk,
         kategori,
         harga: Number(harga),
+        hargaModal: hargaModal ? Number(hargaModal) : 0,
         stok: Number(stok),
         gambar
       }
@@ -112,7 +122,7 @@ const createProduk = async (req, res) => {
 const updateProduk = async (req, res) => {
   try {
     const { id } = req.params;
-    const { namaProduk, harga, stok, kategori } = req.body;
+    const { namaProduk, harga, hargaModal, stok, kategori } = req.body;
 
     const produkId = parseInt(id);
     const existing = await prisma.produk.findUnique({ where: { id: produkId } });
@@ -125,32 +135,21 @@ const updateProduk = async (req, res) => {
       namaProduk: namaProduk || existing.namaProduk,
       kategori: kategori || existing.kategori,
       harga: harga != null ? Number(harga) : existing.harga,
+      hargaModal: hargaModal != null ? Number(hargaModal) : existing.hargaModal,
       stok: stok != null ? Number(stok) : existing.stok
     };
 
     if (req.file) {
-      dataToUpdate.gambar = req.file.filename;
-      if (existing.gambar) {
-        const oldPath = path.join(__dirname, '../../uploads', existing.gambar);
-        try {
-          if (fs.existsSync(oldPath) && fs.lstatSync(oldPath).isFile()) {
-            fs.unlinkSync(oldPath);
-          }
-        } catch (fileErr) {
-          console.error("Failed to delete old image file:", fileErr);
-        }
+      dataToUpdate.gambar = req.file.path; // URL dari Cloudinary
+      if (existing.gambar && existing.gambar.includes('cloudinary')) {
+         const publicId = extractPublicId(existing.gambar);
+         if (publicId) await cloudinary.uploader.destroy(publicId);
       }
     } else if (req.body.removeImage === 'true') {
       dataToUpdate.gambar = null;
-      if (existing.gambar) {
-        const oldPath = path.join(__dirname, '../../uploads', existing.gambar);
-        try {
-          if (fs.existsSync(oldPath) && fs.lstatSync(oldPath).isFile()) {
-            fs.unlinkSync(oldPath);
-          }
-        } catch (fileErr) {
-          console.error("Failed to delete old image file:", fileErr);
-        }
+      if (existing.gambar && existing.gambar.includes('cloudinary')) {
+         const publicId = extractPublicId(existing.gambar);
+         if (publicId) await cloudinary.uploader.destroy(publicId);
       }
     }
 

@@ -10,7 +10,9 @@ import {
   ChefHat,
   Users,
   Archive,
-  Store
+  Store,
+  Receipt,
+  TrendingUp
 } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 
@@ -25,12 +27,14 @@ const Sidebar = () => {
 
   const adminLinks = [
     { to: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/admin/user', label: 'Kelola Akun', icon: Users },
-    { to: '/admin/produk', label: 'Kelola Produk', icon: Soup },
-    { to: '/admin/produk-deaktif', label: 'Produk Deaktif', icon: Archive },
     { to: '/admin/pesanan', label: 'Kasir POS', icon: Store },
     { to: '/admin/antrian', label: 'Monitor Antrian', icon: ListOrdered },
+    { to: '/admin/produk', label: 'Kelola Produk', icon: Soup },
+    { to: '/admin/pengeluaran', label: 'Pengeluaran', icon: Receipt }, 
+    { to: '/admin/laba-rugi', label: 'Laba Rugi', icon: TrendingUp },
     { to: '/admin/riwayat', label: 'Riwayat Penjualan', icon: History },
+    { to: '/admin/user', label: 'Kelola Akun', icon: Users },
+    { to: '/admin/produk-deaktif', label: 'Produk Deaktif', icon: Archive },
   ];
 
   const kasirLinks = [

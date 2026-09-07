@@ -20,7 +20,7 @@ const KelolaProduk = () => {
   const [isArsipOpen, setIsArsipOpen] = useState(false);
 
   // Form states
-  const [formData, setFormData] = useState({ namaProduk: '', harga: '', stok: '', kategori: 'Makanan', gambar: null });
+  const [formData, setFormData] = useState({ namaProduk: '', harga: '', hargaModal: '', stok: '', kategori: 'Makanan', gambar: null });
   const [previewUrl, setPreviewUrl] = useState(null);
   const [formError, setFormError] = useState('');
 
@@ -60,7 +60,7 @@ const KelolaProduk = () => {
   // Open Add Modal
   const handleAdd = () => {
     setEditingProduk(null);
-    setFormData({ namaProduk: '', harga: '', stok: '', kategori: 'Makanan', gambar: null });
+    setFormData({ namaProduk: '', harga: '', hargaModal: '', stok: '', kategori: 'Makanan', gambar: null });
     setPreviewUrl(null);
     setFormError('');
     setIsFormOpen(true);
@@ -73,10 +73,13 @@ const KelolaProduk = () => {
       namaProduk: produk.namaProduk,
       kategori: produk.kategori || 'Makanan',
       harga: String(produk.harga),
+      hargaModal: produk.hargaModal ? String(produk.hargaModal) : '',
       stok: String(produk.stok),
       gambar: null,
     });
-    setPreviewUrl(produk.gambar ? `/uploads/${produk.gambar}` : null);
+    // Jika gambar URL utuh (Cloudinary), pakai langsung, jika tidak tambahkan /uploads/
+    const imgUrl = produk.gambar ? (produk.gambar.startsWith('http') ? produk.gambar : `/uploads/${produk.gambar}`) : null;
+    setPreviewUrl(imgUrl);
     setFormError('');
     setIsFormOpen(true);
   };
@@ -103,6 +106,7 @@ const KelolaProduk = () => {
       data.append('namaProduk', formData.namaProduk);
       data.append('kategori', formData.kategori);
       data.append('harga', formData.harga);
+      if (formData.hargaModal) data.append('hargaModal', formData.hargaModal);
       data.append('stok', formData.stok);
       if (formData.gambar) {
         data.append('gambar', formData.gambar);
@@ -319,7 +323,7 @@ const KelolaProduk = () => {
                     <td className="px-6 py-4">
                       {produk.gambar ? (
                         <img 
-                          src={`/uploads/${produk.gambar}`} 
+                          src={produk.gambar.startsWith('http') ? produk.gambar : `/uploads/${produk.gambar}`} 
                           alt={produk.namaProduk} 
                           className="w-12 h-12 object-cover rounded-lg border border-gray-100"
                         />
@@ -437,13 +441,23 @@ const KelolaProduk = () => {
             </select>
           </div>
           <Input
-            label="Harga (Rp)"
+            label="Harga Jual (Rp)"
             type="text"
             placeholder="Contoh: 15.000"
             value={formData.harga ? new Intl.NumberFormat('id-ID').format(formData.harga) : ''}
             onChange={(e) => {
               const raw = e.target.value.replace(/\D/g, '');
               setFormData({ ...formData, harga: raw });
+            }}
+          />
+          <Input
+            label="Harga Modal / HPP (Rp)"
+            type="text"
+            placeholder="Contoh: 10.000 (Opsional)"
+            value={formData.hargaModal ? new Intl.NumberFormat('id-ID').format(formData.hargaModal) : ''}
+            onChange={(e) => {
+              const raw = e.target.value.replace(/\D/g, '');
+              setFormData({ ...formData, hargaModal: raw });
             }}
           />
           <Input
