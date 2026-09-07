@@ -182,8 +182,8 @@ const InputPesanan = () => {
   // Category Icons & Colors mapping
   const getCategoryMeta = (cat) => {
     switch (cat) {
-      case 'Makanan': return { icon: Utensils, color: 'text-primary', bg: 'bg-primary/10', cardBg: 'bg-white', border: 'border-gray-100 hover:border-primary/30' };
-      case 'Minuman': return { icon: Coffee, color: 'text-secondary', bg: 'bg-secondary/10', cardBg: 'bg-white', border: 'border-gray-100 hover:border-secondary/30' };
+      case 'Makanan': return { icon: Utensils, image: '/logo-makanan.jpg', color: 'text-primary', bg: 'bg-primary/10', cardBg: 'bg-white', border: 'border-gray-100 hover:border-primary/30' };
+      case 'Minuman': return { icon: Coffee, image: '/logo-minuman.jpg', color: 'text-secondary', bg: 'bg-secondary/10', cardBg: 'bg-white', border: 'border-gray-100 hover:border-secondary/30' };
       case 'Dessert': return { icon: CakeSlice, color: 'text-primary', bg: 'bg-primary/10', cardBg: 'bg-white', border: 'border-gray-100 hover:border-primary/30' };
       case 'Lainnya': return { icon: MoreHorizontal, color: 'text-secondary', bg: 'bg-secondary/10', cardBg: 'bg-white', border: 'border-gray-100 hover:border-secondary/30' };
       default: return { icon: Soup, color: 'text-dark', bg: 'bg-gray-100', cardBg: 'bg-white', border: 'border-gray-100 hover:border-gray-300' };
@@ -204,8 +204,7 @@ const InputPesanan = () => {
             <Input icon={Search} placeholder="Cari menu bakso..." value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
           
-          {/* Category Tabs (Pill style) */}
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide w-full sm:w-auto py-1">
+                  <div className="flex gap-2 overflow-x-auto scrollbar-hide w-full sm:w-auto py-1">
             {['Semua', 'Makanan', 'Minuman', 'Dessert', 'Lainnya'].map((cat) => {
               const meta = getCategoryMeta(cat);
               const Icon = cat === 'Semua' ? Soup : meta.icon;
@@ -219,7 +218,15 @@ const InputPesanan = () => {
                       : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-100'
                   }`}
                 >
-                  <Icon size={16} className={activeCategory === cat ? 'text-white' : meta.color} />
+                  {meta?.image ? (
+                    <img 
+                      src={meta.image} 
+                      alt={cat} 
+                      className={`w-5 h-5 rounded-full object-cover shadow-sm ${activeCategory === cat ? 'border border-white/20' : 'grayscale'}`} 
+                    />
+                  ) : (
+                    <Icon size={16} className={activeCategory === cat ? 'text-white' : meta.color} />
+                  )}
                   {cat}
                 </button>
               )
@@ -269,6 +276,12 @@ const InputPesanan = () => {
                       {produk.gambar ? (
                         <img 
                           src={`/uploads/${produk.gambar}`} 
+                          alt={produk.namaProduk}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      ) : meta?.image ? (
+                        <img 
+                          src={meta.image} 
                           alt={produk.namaProduk}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
