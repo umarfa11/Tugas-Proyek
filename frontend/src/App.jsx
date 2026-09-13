@@ -13,6 +13,7 @@ import KelolaPengeluaran from './pages/KelolaPengeluaran';
 import LabaRugi from './pages/LabaRugi';
 
 import Dashboard from './pages/Dashboard';
+import PWAInstallBanner from './components/PWAInstallBanner';
 
 const NotFound = () => <div className="p-8 text-center text-red-500 text-xl font-bold">404 - Page Not Found</div>;
 
@@ -106,6 +107,7 @@ function App() {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <PWAInstallBanner />
     </BrowserRouter>
   );
 }
