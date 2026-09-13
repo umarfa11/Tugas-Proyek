@@ -7,5 +7,6 @@ const { verifyToken, verifyRole } = require('../middlewares/authMiddleware');
 router.use(verifyToken, verifyRole(['super_admin']));
 
 router.get('/', labaRugiController.getLaporanLabaRugi);
+router.get('/transaksi-sumber', labaRugiController.getDetailTransaksiSumber);
 
 module.exports = router;
