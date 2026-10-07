@@ -101,14 +101,3 @@ model Pembayaran {
 
   @@map("pembayaran")
 }
-
-model Pengeluaran {
-  id         Int      @id @default(autoincrement())
-  tanggal    DateTime @default(now())
-  keterangan String   @db.VarChar(255)
-  nominal    Decimal  @db.Decimal(10, 2)
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
-
-  @@map("pengeluaran")
-}
