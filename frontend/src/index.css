@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --color-primary: #FF6B6B;
@@ -33,7 +33,91 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
+}
+
+/* ========================================================= */
+/* DARK MODE STYLES & SURFACE ADAPTATION                    */
+/* ========================================================= */
+.dark body {
+  background: #0b0f19 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Background overrides in dark mode */
+.dark .bg-white {
+  background-color: #111827 !important;
+  color: #f1f5f9;
+}
+
+.dark .bg-light {
+  background-color: #0b0f19 !important;
+}
+
+.dark .bg-gray-50,
+.dark .bg-slate-50 {
+  background-color: #1e293b !important;
+}
+
+.dark .bg-gray-100,
+.dark .bg-slate-100 {
+  background-color: #1e293b !important;
+}
+
+/* Borders in dark mode */
+.dark .border-gray-100,
+.dark .border-gray-200,
+.dark .border-slate-100,
+.dark .border-slate-200 {
+  border-color: #334155 !important;
+}
+
+/* Text color adaptations */
+.dark .text-dark,
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-slate-900,
+.dark .text-slate-800 {
+  color: #f8fafc !important;
+}
+
+.dark .text-gray-700,
+.dark .text-gray-600 {
+  color: #cbd5e1 !important;
+}
+
+.dark .text-gray-500,
+.dark .text-gray-400 {
+  color: #94a3b8 !important;
+}
+
+/* Form inputs & controls */
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark select,
+.dark textarea {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+.dark input::placeholder {
+  color: #64748b !important;
+}
+
+/* Table styles */
+.dark table {
+  color: #e2e8f0;
+}
+
+.dark tbody tr:hover {
+  background-color: rgba(30, 41, 59, 0.7) !important;
+}
+
+.dark .divide-gray-50,
+.dark .divide-gray-100,
+.dark .divide-gray-200 {
+  border-color: #334155 !important;
 }
 
 /* Custom utility to hide scrollbars */
