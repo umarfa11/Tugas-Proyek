@@ -212,65 +212,60 @@ const OrderOnline = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 text-dark flex flex-col font-sans pb-28 lg:pb-8">
-      {/* ===== Header Bar (Mobile Friendly) ===== */}
+      {/* ===== Header Bar (Perfect Alignment & Uniform Height) ===== */}
       <header className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-30 shadow-xs">
-        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-2.5 sm:py-3.5 flex items-center justify-between gap-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
           {/* Logo & Title */}
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-primary to-rose-500 flex items-center justify-center text-white shadow-xs shrink-0">
-              <ChefHat size={20} className="sm:hidden" />
-              <ChefHat size={22} className="hidden sm:block" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-rose-500 flex items-center justify-center text-white shadow-xs shrink-0">
+              <ChefHat size={22} />
             </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5">
-                <h1 className="font-extrabold text-dark text-sm sm:text-base tracking-tight truncate leading-tight">
-                  KASIR BAKSOKU
-                </h1>
-                <span className="hidden sm:inline-block px-1.5 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-rose-50 text-primary border border-rose-200">
-                  Online
-                </span>
-              </div>
-              <p className="text-[10px] sm:text-xs text-gray-400 truncate hidden sm:block">
-                Pesan Mandiri & Bayar QRIS
-              </p>
+            <div className="min-w-0 flex flex-col justify-center">
+              <h1 className="font-extrabold text-dark text-sm sm:text-base tracking-tight truncate leading-tight">
+                KASIR BAKSOKU
+              </h1>
+              <span className="text-[10px] sm:text-xs font-bold text-primary flex items-center gap-1 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                Order Online
+              </span>
             </div>
           </div>
 
-          {/* Customer Profile & Cart Button */}
+          {/* Customer Profile & Cart Button (Uniform Height h-10) */}
           <div className="flex items-center gap-2 shrink-0">
             {customerName ? (
               <button 
                 onClick={handleOpenIdentityModal}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-200 text-xs font-semibold text-dark transition-all cursor-pointer"
+                className="h-10 px-3 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-200 flex items-center gap-2 text-xs font-bold text-dark transition-all cursor-pointer shadow-2xs"
                 title="Ubah data pemesan"
               >
-                <div className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-[10px] shrink-0">
+                <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center font-black text-xs shrink-0">
                   {customerName.charAt(0).toUpperCase()}
                 </div>
-                <span className="max-w-[70px] sm:max-w-[120px] truncate text-xs font-bold leading-tight">
+                <span className="max-w-[70px] sm:max-w-[120px] truncate text-xs">
                   {customerName}
                 </span>
               </button>
             ) : (
               <button 
                 onClick={handleOpenIdentityModal}
-                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-primary text-white rounded-xl text-xs font-bold shadow-xs hover:bg-primary/90 transition-all cursor-pointer"
+                className="h-10 px-3 sm:px-4 bg-primary text-white rounded-xl text-xs font-bold shadow-xs hover:bg-primary/90 transition-all cursor-pointer flex items-center gap-1.5"
               >
-                <User size={13} />
+                <User size={14} />
                 <span className="hidden sm:inline">Data Pemesan</span>
                 <span className="sm:hidden">Masuk</span>
               </button>
             )}
 
-            {/* Cart Trigger Mobile */}
+            {/* Cart Trigger Mobile (Uniform h-10 w-10) */}
             <button 
               onClick={() => setIsCartMobileOpen(true)}
-              className="lg:hidden relative p-2 sm:p-2.5 rounded-xl bg-gray-50 border border-gray-200 text-dark hover:bg-gray-100 transition-all cursor-pointer"
+              className="lg:hidden h-10 w-10 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-dark flex items-center justify-center relative transition-all cursor-pointer shadow-2xs shrink-0"
               aria-label="Buka Keranjang"
             >
               <ShoppingCart size={18} />
               {totalItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4.5 h-4.5 bg-primary text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-xs">
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-xs">
                   {totalItemCount}
                 </span>
               )}
