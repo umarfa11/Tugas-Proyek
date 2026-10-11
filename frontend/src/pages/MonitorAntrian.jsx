@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
-  ListOrdered, Clock, CheckCircle2, ArrowRight, 
-  RefreshCw, User, Timer, Soup, MessageCircle, Smartphone
+  ListOrdered, Clock, CheckCircle2, 
+  RefreshCw, User, Timer, Soup, MessageCircle, Smartphone, Phone,
+  Check, Utensils
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import api from '../services/api';
@@ -122,92 +123,193 @@ const MonitorAntrian = () => {
           <p className="text-sm text-gray-300 mt-1">Semua pesanan sudah selesai diproses</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
           {antrian.map((item, index) => (
             <div 
               key={item.id} 
-              className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all duration-300 ${
-                index === 0 ? 'border-primary/30 ring-2 ring-primary/10' : 'border-gray-100'
+              className={`bg-white rounded-2xl border transition-all duration-200 overflow-hidden shadow-sm hover:shadow-md ${
+                index === 0 ? 'border-primary/50 ring-2 ring-primary/20' : 'border-gray-200'
               }`}
             >
-              <div className="flex flex-col sm:flex-row items-stretch">
-                {/* Queue Number */}
-                <div className={`w-full sm:w-28 flex flex-col items-center justify-center py-4 sm:py-6 ${
-                  index === 0 ? 'bg-primary/10' : 'bg-gray-50'
-                }`}>
-                  <span className="text-[10px] uppercase tracking-widest text-gray-400 font-semibold mb-1">Antrian</span>
-                  <span className={`text-4xl font-bold ${index === 0 ? 'text-primary' : 'text-dark'}`}>
-                    {item.nomorAntrian}
-                  </span>
-                  {index === 0 && (
-                    <span className="mt-2 px-2 py-0.5 bg-primary text-white text-[10px] font-bold rounded-full uppercase tracking-wider">
-                      Selanjutnya
-                    </span>
-                  )}
-                </div>
-
-                {/* Order Details */}
-                <div className="flex-1 p-5">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <User size={16} className="text-gray-400 shrink-0" />
-                        <h3 className="font-bold text-dark">{item.namaPembeli}</h3>
-                        {item.tipePesanan === 'online' && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-200">
-                            <Smartphone size={10} /> Online
-                          </span>
-                        )}
-                        {item.nomorHp && (
-                          <span className="text-[11px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
-                            WA: {item.nomorHp}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-4 text-xs text-gray-400">
-                        <span className="flex items-center gap-1">
-                          <Clock size={12} /> Masuk: {formatTime(item.enteredAt)}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Timer size={12} /> Menunggu: {getWaitTime(item.enteredAt)}
-                        </span>
-                      </div>
-                    </div>
-                    <span className="font-bold text-dark">{formatRupiah(item.totalHarga)}</span>
+              {/* 1. NOMOR ANTRIAN & STATUS HEADER */}
+              <div className={`px-5 py-3.5 flex flex-wrap items-center justify-between gap-3 border-b ${
+                index === 0 ? 'bg-primary/5 border-primary/20' : 'bg-gray-50/80 border-gray-100'
+              }`}>
+                <div className="flex items-center gap-3">
+                  {/* Badge Nomor Antrian */}
+                  <div className={`px-3.5 py-1.5 rounded-xl font-black text-xl flex items-center gap-1.5 shadow-xs ${
+                    index === 0 ? 'bg-primary text-white' : 'bg-gray-800 text-white'
+                  }`}>
+                    <span className="text-[11px] font-semibold uppercase tracking-wider opacity-80">Antrian</span>
+                    <span>#{item.nomorAntrian}</span>
                   </div>
 
-                  {/* Item list */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {item.detailPesanan?.map((detail, idx) => (
-                      <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-50 rounded-lg text-xs text-gray-600">
-                        <Soup size={12} className="text-gray-400" />
-                        {detail.produk?.namaProduk} x{detail.jumlah}
+                  <div className="flex flex-wrap items-center gap-2">
+                    {index === 0 ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-100 text-amber-800 border border-amber-300 animate-pulse">
+                        🔥 Sedang Diproses (Giliran #1)
                       </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-600">
+                        Urutan ke-{index + 1}
+                      </span>
+                    )}
+
+                    {/* Tipe Pesanan */}
+                    {item.tipePesanan === 'online' ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                        <Smartphone size={12} /> Order Online (QRIS)
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700">
+                        Kasir POS (Offline)
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Waktu Masuk & Durasi Menunggu */}
+                <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
+                  <span className="flex items-center gap-1" title="Jam Masuk Pesanan">
+                    <Clock size={13} className="text-gray-400" /> {formatTime(item.enteredAt)}
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1" title="Lama Waktu Menunggu">
+                    <Timer size={13} className="text-gray-400" /> {getWaitTime(item.enteredAt)}
+                  </span>
+                </div>
+              </div>
+
+              {/* BODY: INFORMASI PEMBELI & DETAIL PRODUK */}
+              <div className="p-5 space-y-4">
+                {/* 2. INFORMASI PEMBELI (NAMA & NOMOR HP) */}
+                <div className="bg-slate-50/90 rounded-xl p-3.5 border border-slate-200/70 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  {/* Nama Pembeli */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-primary shrink-0 shadow-2xs mt-0.5">
+                      <User size={16} />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">
+                        Nama Pembeli
+                      </span>
+                      <span className="text-base font-extrabold text-gray-900 block truncate" title={item.namaPembeli}>
+                        {item.namaPembeli || 'Pelanggan'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Nomor HP Pembeli */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-emerald-600 shrink-0 shadow-2xs mt-0.5">
+                      <Phone size={16} />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">
+                        Nomor HP / WhatsApp
+                      </span>
+                      {item.nomorHp ? (
+                        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                          <span className="text-sm font-extrabold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
+                            {item.nomorHp}
+                          </span>
+                          <button 
+                            onClick={() => handleKirimWA(item)}
+                            className="text-xs font-bold text-emerald-700 hover:text-emerald-800 underline inline-flex items-center gap-1 cursor-pointer"
+                            title="Buka Chat WhatsApp"
+                          >
+                            <MessageCircle size={13} /> Chat WA
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-xs font-medium text-gray-400 italic block mt-0.5">
+                          Tidak ada (Pesanan Offline)
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. RINCIAN PRODUK APA SAJA YANG DIBELI */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
+                      <Utensils size={14} className="text-primary" /> Rincian Produk yang Dibeli
+                    </span>
+                    <span className="text-xs font-bold text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-md">
+                      Total: {item.detailPesanan?.reduce((sum, d) => sum + d.jumlah, 0) || 0} Porsi
+                    </span>
+                  </div>
+
+                  {/* List / Tabel Produk */}
+                  <div className="border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100 bg-white shadow-2xs">
+                    {item.detailPesanan?.map((detail, idx) => (
+                      <div key={idx} className="p-3 sm:px-4 flex items-center justify-between hover:bg-slate-50/60 transition-colors">
+                        <div className="flex items-center gap-3 min-w-0 pr-2">
+                          <span className="w-5 h-5 rounded-full bg-primary/10 text-primary font-bold text-[11px] flex items-center justify-center shrink-0">
+                            {idx + 1}
+                          </span>
+                          <div className="min-w-0">
+                            <span className="font-bold text-gray-900 text-sm block truncate">
+                              {detail.produk?.namaProduk || 'Menu Produk'}
+                            </span>
+                            <span className="text-[11px] text-gray-400 font-medium">
+                              @ {formatRupiah(detail.produk?.harga || (detail.subtotal / detail.jumlah))}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-xs font-black">
+                            {detail.jumlah} Porsi
+                          </span>
+                          <span className="font-bold text-gray-900 text-sm w-24 text-right">
+                            {formatRupiah(detail.subtotal)}
+                          </span>
+                        </div>
+                      </div>
                     ))}
                   </div>
 
-                  {/* Action */}
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Button
-                      variant={index === 0 ? 'primary' : 'outline'}
-                      size="sm"
-                      icon={CheckCircle2}
-                      isLoading={updatingId === item.id}
-                      onClick={() => handleSelesai(item)}
-                    >
-                      Tandai Selesai
-                    </Button>
-                    {item.nomorHp && (
-                      <button
-                        onClick={() => handleKirimWA(item)}
-                        className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all active:scale-95 cursor-pointer"
-                        title="Kirim Pesan Notifikasi WhatsApp"
-                      >
-                        <MessageCircle size={14} />
-                        <span>Kirim WA</span>
-                      </button>
-                    )}
+                  {/* TOTAL TAGIHAN & STATUS PEMBAYARAN */}
+                  <div className="mt-3 flex items-center justify-between px-3.5 py-2.5 bg-gray-50 rounded-xl border border-gray-200/80">
+                    <div>
+                      <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">
+                        Total Tagihan
+                      </span>
+                      <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                        <Check size={13} /> Lunas (Pembayaran Berhasil)
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-lg sm:text-xl font-black text-primary">
+                        {formatRupiah(item.totalHarga)}
+                      </span>
+                    </div>
                   </div>
+                </div>
+
+                {/* 4. ACTIONS */}
+                <div className="pt-2 flex items-center justify-end gap-2.5 border-t border-gray-100 flex-wrap">
+                  {item.nomorHp && (
+                    <button
+                      onClick={() => handleKirimWA(item)}
+                      className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer"
+                      title="Kirim Pesan WhatsApp Selesai ke Pelanggan"
+                    >
+                      <MessageCircle size={14} />
+                      <span>Kirim WA</span>
+                    </button>
+                  )}
+                  <Button
+                    variant={index === 0 ? 'primary' : 'outline'}
+                    size="sm"
+                    icon={CheckCircle2}
+                    isLoading={updatingId === item.id}
+                    onClick={() => handleSelesai(item)}
+                  >
+                    Tandai Selesai
+                  </Button>
                 </div>
               </div>
             </div>

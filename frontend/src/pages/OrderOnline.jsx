@@ -686,8 +686,8 @@ const OrderOnline = () => {
         </form>
       </Modal>
 
-      {/* ===== Payment Modal: QRIS Statis ===== */}
-      <Modal isOpen={isPaymentOpen} onClose={() => setIsPaymentOpen(false)} title="Pembayaran QRIS Statis" size="md">
+      {/* ===== Payment Modal: QRIS ===== */}
+      <Modal isOpen={isPaymentOpen} onClose={() => setIsPaymentOpen(false)} title="Pembayaran QRIS" size="md">
         <div className="space-y-4 text-center">
           {paymentError && (
             <div className="p-3.5 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-xs font-bold flex items-center justify-center gap-2">
