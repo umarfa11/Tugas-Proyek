@@ -60,14 +60,16 @@ model Pesanan {
   id            Int            @id @default(autoincrement())
   nomorAntrian  Int            @map("nomor_antrian")
   namaPembeli   String         @map("nama_pembeli") @db.VarChar(100)
-  userId        Int            @map("user_id")
+  nomorHp       String?        @map("nomor_hp") @db.VarChar(20)
+  tipePesanan   String?        @default("offline") @map("tipe_pesanan") @db.VarChar(20)
+  userId        Int?           @map("user_id")
   totalHarga    Decimal        @map("total_harga") @db.Decimal(10, 2)
   statusPesanan StatusPesanan  @map("status_pesanan")
   enteredAt     DateTime       @default(now()) @map("entered_at")
   completedAt   DateTime?      @map("completed_at")
   createdAt     DateTime       @default(now()) @map("created_at")
   
-  user          User           @relation(fields: [userId], references: [id])
+  user          User?          @relation(fields: [userId], references: [id])
   detailPesanan DetailPesanan[]
   pembayaran    Pembayaran?
 

@@ -11,6 +11,7 @@ import KelolaUser from './pages/KelolaUser';
 import ProdukDeaktif from './pages/ProdukDeaktif';
 
 import Dashboard from './pages/Dashboard';
+import OrderOnline from './pages/OrderOnline';
 import PWAInstallBanner from './components/PWAInstallBanner';
 
 const NotFound = () => <div className="p-8 text-center text-red-500 text-xl font-bold">404 - Page Not Found</div>;
@@ -39,7 +40,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* Public */}
+        {/* Public - Customer Order Online */}
+        <Route path="/order" element={<OrderOnline />} />
+
+        {/* Public - Staff / Admin Login */}
         <Route path="/login" element={
           <PublicRoute><Login /></PublicRoute>
         } />

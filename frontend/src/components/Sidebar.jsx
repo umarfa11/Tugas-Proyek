@@ -10,7 +10,8 @@ import {
   ChefHat,
   Users,
   Archive,
-  Store
+  Store,
+  Smartphone
 } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 
@@ -91,6 +92,16 @@ const Sidebar = () => {
 
       {/* User Info & Logout - Desktop Only */}
       <div className="hidden lg:block p-4 pb-8 sm:pb-4 border-t border-gray-100">
+        <a 
+          href="/order" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 w-full mb-3 px-3 py-2 rounded-xl text-xs font-bold text-primary bg-primary/10 hover:bg-primary/20 transition-all border border-primary/20"
+        >
+          <Smartphone size={15} />
+          <span>Buka Order Online 📱</span>
+        </a>
+
         <div className="flex items-center gap-3 px-3 mb-3">
           <div className="w-9 h-9 rounded-full bg-secondary/20 flex items-center justify-center">
             <span className="text-secondary font-bold text-sm">

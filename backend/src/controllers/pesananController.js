@@ -165,6 +165,12 @@ const selesaikanPesanan = async (req, res) => {
       data: {
         statusPesanan: 'selesai',
         completedAt: new Date()
+      },
+      include: {
+        detailPesanan: {
+          include: { produk: true }
+        },
+        pembayaran: true
       }
     });
 
@@ -178,8 +184,145 @@ const selesaikanPesanan = async (req, res) => {
   }
 };
 
+const createPesananOnline = async (req, res) => {
+  try {
+    const { namaPembeli, nomorHp, items } = req.body;
+
+    if (!namaPembeli || !nomorHp || !items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: 'Nama, nomor WhatsApp, dan menu pesanan wajib diisi' });
+    }
+
+    // 1. Fetch all products
+    const productIds = items.map(item => item.produkId);
+    const dbProducts = await prisma.produk.findMany({
+      where: {
+        id: { in: productIds },
+        deactivatedAt: null
+      }
+    });
+
+    const productMap = new Map(dbProducts.map(p => [p.id, p]));
+    let totalHarga = 0;
+    const detailPesananData = [];
+
+    for (const item of items) {
+      const produk = productMap.get(item.produkId);
+      if (!produk) {
+        return res.status(404).json({ message: `Produk dengan ID ${item.produkId} tidak ditemukan atau dinonaktifkan` });
+      }
+      if (produk.stok < item.jumlah) {
+        return res.status(400).json({ message: `Stok tidak mencukupi untuk menu ${produk.namaProduk} (Sisa stok: ${produk.stok})` });
+      }
+
+      const subtotal = Number(produk.harga) * Number(item.jumlah);
+      totalHarga += subtotal;
+
+      detailPesananData.push({
+        produkId: item.produkId,
+        jumlah: Number(item.jumlah),
+        subtotal
+      });
+    }
+
+    // 2. Determine Nomor Antrian (Reset ke 1 tiap hari)
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const lastPesananToday = await prisma.pesanan.findFirst({
+      where: {
+        createdAt: {
+          gte: startOfToday
+        }
+      },
+      orderBy: { id: 'desc' }
+    });
+    const nomorAntrian = lastPesananToday ? lastPesananToday.nomorAntrian + 1 : 1;
+
+    // 3. Prisma Transaction
+    const result = await prisma.$transaction(async (tx) => {
+      const newPesanan = await tx.pesanan.create({
+        data: {
+          nomorAntrian,
+          namaPembeli,
+          nomorHp: String(nomorHp).trim(),
+          tipePesanan: 'online',
+          totalHarga: Number(totalHarga),
+          statusPesanan: 'diproses',
+          detailPesanan: {
+            create: detailPesananData
+          },
+          pembayaran: {
+            create: {
+              metodeBayar: 'qris',
+              nominalDiterima: Number(totalHarga),
+              kembalian: 0,
+              statusPembayaran: 'lunas'
+            }
+          }
+        },
+        include: {
+          detailPesanan: {
+            include: { produk: true }
+          },
+          pembayaran: true
+        }
+      });
+
+      // Potong stok produk
+      const updatePromises = detailPesananData.map(item =>
+        tx.produk.update({
+          where: { id: item.produkId },
+          data: {
+            stok: { decrement: item.jumlah }
+          }
+        })
+      );
+
+      await Promise.all(updatePromises);
+      return newPesanan;
+    }, {
+      maxWait: 10000,
+      timeout: 30000
+    });
+
+    res.status(201).json({
+      message: 'Pesanan online berhasil dibuat',
+      pesanan: result
+    });
+  } catch (error) {
+    console.error('Error in createPesananOnline:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const cekStatusPesanan = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const pesanan = await prisma.pesanan.findUnique({
+      where: { id: parseInt(id) },
+      include: {
+        detailPesanan: {
+          include: { produk: true }
+        },
+        pembayaran: true
+      }
+    });
+
+    if (!pesanan) {
+      return res.status(404).json({ message: 'Pesanan tidak ditemukan' });
+    }
+
+    res.status(200).json(pesanan);
+  } catch (error) {
+    console.error('Error in cekStatusPesanan:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   createPesanan,
   getAntrian,
-  selesaikanPesanan
+  selesaikanPesanan,
+  createPesananOnline,
+  cekStatusPesanan
 };

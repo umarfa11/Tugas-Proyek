@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
   ListOrdered, Clock, CheckCircle2, ArrowRight, 
-  RefreshCw, User, Timer, Soup
+  RefreshCw, User, Timer, Soup, MessageCircle, Smartphone
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import api from '../services/api';
@@ -29,11 +29,45 @@ const MonitorAntrian = () => {
     return () => clearInterval(interval);
   }, [fetchAntrian]);
 
-  const handleSelesai = async (id) => {
-    setUpdatingId(id);
+  const formatWaNumber = (phone) => {
+    if (!phone) return '';
+    let clean = String(phone).replace(/\D/g, '');
+    if (clean.startsWith('0')) clean = '62' + clean.slice(1);
+    else if (clean.startsWith('8')) clean = '62' + clean;
+    return clean;
+  };
+
+  const handleKirimWA = (item) => {
+    const waNumber = formatWaNumber(item.nomorHp);
+    if (!waNumber) {
+      alert('Nomor WhatsApp pelanggan tidak tersedia');
+      return;
+    }
+
+    const itemsText = item.detailPesanan?.map(d => `• ${d.produk?.namaProduk} x${d.jumlah}`).join('\n') || '';
+    const pesan = `Halo Kak *${item.namaPembeli}*! 👋\n\n` +
+      `Pesanan Anda di *KASIR BAKSOKU* dengan *Nomor Antrean #${item.nomorAntrian}* sudah *SELESAI* dan siap disajikan/diambil! 🍜✨\n\n` +
+      `*Rincian Menu:*\n${itemsText}\n\n` +
+      `*Total Bayar:* ${formatRupiah(item.totalHarga)} (Lunas QRIS)\n\n` +
+      `Silakan tunjukkan pesan ini di konter pengambilan. Terima kasih sudah memesan di Kasir Baksoku! 🙏`;
+
+    const url = `https://wa.me/${waNumber}?text=${encodeURIComponent(pesan)}`;
+    window.open(url, '_blank');
+  };
+
+  const handleSelesai = async (item) => {
+    setUpdatingId(item.id);
     try {
-      await api.put(`/pesanan/${id}/status`);
+      await api.put(`/pesanan/${item.id}/status`);
       fetchAntrian();
+
+      // Jika pesanan online dan ada nomor HP, tawarkan langsung kirim notifikasi WA
+      if (item.nomorHp) {
+        const confirmWa = window.confirm(`Pesanan #${item.nomorAntrian} selesai! Buka WhatsApp untuk kirim notifikasi ke ${item.namaPembeli}?`);
+        if (confirmWa) {
+          handleKirimWA(item);
+        }
+      }
     } catch (err) {
       console.error('Error updating status:', err);
     } finally {
@@ -116,9 +150,19 @@ const MonitorAntrian = () => {
                 <div className="flex-1 p-5">
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <User size={16} className="text-gray-400" />
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <User size={16} className="text-gray-400 shrink-0" />
                         <h3 className="font-bold text-dark">{item.namaPembeli}</h3>
+                        {item.tipePesanan === 'online' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-200">
+                            <Smartphone size={10} /> Online
+                          </span>
+                        )}
+                        {item.nomorHp && (
+                          <span className="text-[11px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                            WA: {item.nomorHp}
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-4 text-xs text-gray-400">
                         <span className="flex items-center gap-1">
@@ -143,15 +187,27 @@ const MonitorAntrian = () => {
                   </div>
 
                   {/* Action */}
-                  <Button
-                    variant={index === 0 ? 'primary' : 'outline'}
-                    size="sm"
-                    icon={CheckCircle2}
-                    isLoading={updatingId === item.id}
-                    onClick={() => handleSelesai(item.id)}
-                  >
-                    Tandai Selesai
-                  </Button>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Button
+                      variant={index === 0 ? 'primary' : 'outline'}
+                      size="sm"
+                      icon={CheckCircle2}
+                      isLoading={updatingId === item.id}
+                      onClick={() => handleSelesai(item)}
+                    >
+                      Tandai Selesai
+                    </Button>
+                    {item.nomorHp && (
+                      <button
+                        onClick={() => handleKirimWA(item)}
+                        className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all active:scale-95 cursor-pointer"
+                        title="Kirim Pesan Notifikasi WhatsApp"
+                      >
+                        <MessageCircle size={14} />
+                        <span>Kirim WA</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

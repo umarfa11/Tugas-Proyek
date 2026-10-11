@@ -3,7 +3,11 @@ const router = express.Router();
 const pesananController = require('../controllers/pesananController');
 const { verifyToken } = require('../middlewares/authMiddleware');
 
-// All pesanan routes are accessible by both Kasir & Super Admin
+// Public routes for online customers
+router.post('/online', pesananController.createPesananOnline);
+router.get('/status/:id', pesananController.cekStatusPesanan);
+
+// Protected routes - Kasir & Super Admin
 router.use(verifyToken);
 
 router.post('/', pesananController.createPesanan);

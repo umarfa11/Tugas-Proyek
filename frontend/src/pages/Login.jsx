@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { User, Lock, LogIn, ChefHat } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { User, Lock, LogIn, ChefHat, Soup } from 'lucide-react';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import useAuthStore from '../store/authStore';
@@ -109,6 +109,18 @@ const Login = () => {
               >
                 Masuk ke Sistem
               </Button>
+            </div>
+
+            {/* Link to Order Online */}
+            <div className="mt-6 pt-5 border-t border-gray-100 text-center">
+              <p className="text-xs text-gray-500 mb-2">Pelanggan ingin memesan mandiri?</p>
+              <Link 
+                to="/order" 
+                className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl border border-rose-200 bg-rose-50/70 hover:bg-rose-100/70 text-primary font-bold text-sm transition-all shadow-xs"
+              >
+                <Soup size={16} />
+                <span>Buka Menu & Order Online 🍜</span>
+              </Link>
             </div>
           </form>
 

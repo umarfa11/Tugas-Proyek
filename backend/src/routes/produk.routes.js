@@ -4,8 +4,8 @@ const produkController = require('../controllers/produkController');
 const { verifyToken, verifyRole } = require('../middlewares/authMiddleware');
 const upload = require('../middlewares/uploadMiddleware');
 
-// Get all - accessible by kasir & super_admin
-router.get('/', verifyToken, produkController.getAllProduk);
+// Get all - accessible by public (pelanggan online), kasir & super_admin
+router.get('/', produkController.getAllProduk);
 
 // Get deactivated products - only accessible by super_admin
 router.get('/deactivated', verifyToken, verifyRole(['super_admin']), produkController.getDeactivatedProduk);

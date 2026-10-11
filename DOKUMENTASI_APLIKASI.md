@@ -214,17 +214,19 @@ Authorization: Bearer <token_jwt>
 ### 5.2 Modul Produk & Menu (`/api/produk`)
 | Method | Endpoint | Hak Akses | Deskripsi & Payload |
 |---|---|---|---|
-| `GET` | `/api/produk` | Kasir & Admin | **Ambil Produk Aktif** (`deactivatedAt: null`). Otomatis memicu auto-cleanup produk kedaluwarsa > 30 hari di background. |
+| `GET` | `/api/produk` | Publik, Kasir & Admin | **Ambil Produk Aktif** (`deactivatedAt: null`). Menampilkan menu dan ketersediaan stok real-time untuk pemesanan online maupun kasir POS. |
 | `GET` | `/api/produk/deactivated` | Super Admin | **Ambil Produk Nonaktif** (Tab Arsip Pemulihan 30 Hari). |
 | `POST` | `/api/produk` | Super Admin | **Tambah Menu Baru**.<br>Form-Data: `namaProduk`, `harga`, `hargaModal`, `stok`, `kategori`, `gambar` (opsional). |
 | `PUT` | `/api/produk/:id` | Super Admin | **Update Menu**.<br>Form-Data: properti yang diubah + `gambar` baru atau `removeImage: "true"`. |
 | `DELETE`| `/api/produk/:id` | Super Admin | **Nonaktifkan Menu (Soft-Delete 30 Hari)**.<br>Mengisi `deactivatedAt = new Date()`. |
 | `POST` | `/api/produk/:id/restore` | Super Admin | **Pulihkan Menu**.<br>Mengatur `deactivatedAt = null`. |
 
-### 5.3 Modul Pesanan & Antrean FIFO (`/api/pesanan`)
+### 5.3 Modul Pesanan, Antrean FIFO & Order Online (`/api/pesanan`)
 | Method | Endpoint | Hak Akses | Deskripsi & Payload |
 |---|---|---|---|
-| `POST` | `/api/pesanan` | Kasir & Admin | **Buat Transaksi Kasir (Checkout)**.<br>Body:<br>```json
+| `POST` | `/api/pesanan/online` | Publik (Pelanggan) | **Transaksi Order Online Mandiri**.<br>Body: `{ namaPembeli, nomorHp, items: [{ produkId, jumlah }] }`.<br>Menghitung nomor antrian hari ini, memotong stok, membuat pembayaran QRIS lunas secara atomik via Prisma `$transaction`. |
+| `GET` | `/api/pesanan/status/:id` | Publik (Pelanggan) | **Cek Status Tiket Antrean Online**.<br>Mengambil detail pesanan dan status kesiapan dapur. |
+| `POST` | `/api/pesanan` | Kasir & Admin | **Buat Transaksi Kasir (Checkout POS)**.<br>Body:<br>```json
 {
   "namaPembeli": "Budi",
   "metodeBayar": "tunai",
@@ -234,8 +236,8 @@ Authorization: Bearer <token_jwt>
   ]
 }
 ```<br>Menghitung nomor antrian hari ini, memotong stok, membuat `pembayaran` lunas via Prisma `$transaction`. |
-| `GET` | `/api/pesanan/antrian` | Kasir & Admin | **Daftar Antrean Dapur Aktif**.<br>Hanya mengambil `statusPesanan: "diproses"`, diurutkan secara **FIFO** (`ORDER BY enteredAt ASC`). |
-| `PUT` | `/api/pesanan/:id/status` | Kasir & Admin | **Selesaikan Pesanan Dapur**.<br>Mengubah `statusPesanan = "selesai"` dan mengisi `completedAt = new Date()`. |
+| `GET` | `/api/pesanan/antrian` | Kasir & Admin | **Daftar Antrean Dapur Aktif**.<br>Hanya mengambil `statusPesanan: "diproses"`, diurutkan secara **FIFO** (`ORDER BY enteredAt ASC`). Dilengkapi badge Order Online dan nomor WhatsApp pelanggan. |
+| `PUT` | `/api/pesanan/:id/status` | Kasir & Admin | **Selesaikan Pesanan Dapur & Notifikasi WA**.<br>Mengubah `statusPesanan = "selesai"`, mengisi `completedAt = new Date()`, dan memicu opsi kirim notifikasi WhatsApp ke pelanggan. |
 
 ### 5.4 Modul Riwayat & Rekap Penjualan (`/api/riwayat`)
 | Method | Endpoint | Hak Akses | Deskripsi & Payload |
