@@ -1,5 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Search, Soup, AlertTriangle, RotateCcw, Bell, Image as ImageIcon, Upload, X, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  Plus, Pencil, Trash2, Search, Soup, AlertTriangle, RotateCcw, Bell, 
+  Image as ImageIcon, Upload, X, ChevronDown, ChevronUp, Camera, 
+  RefreshCw, Check, Smartphone
+} from 'lucide-react';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Modal from '../components/ui/Modal';
@@ -18,6 +22,15 @@ const KelolaProduk = () => {
   const [deletingProduk, setDeletingProduk] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isArsipOpen, setIsArsipOpen] = useState(false);
+
+  // Camera & Image states
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [cameraStream, setCameraStream] = useState(null);
+  const [cameraFacing, setCameraFacing] = useState('environment'); // 'environment' (belakang) atau 'user' (depan)
+  const [cameraError, setCameraError] = useState('');
+  const videoRef = useRef(null);
+  const nativeCameraInputRef = useRef(null);
+  const galleryInputRef = useRef(null);
 
   // Form states
   const [formData, setFormData] = useState({ namaProduk: '', harga: '', hargaModal: '', stok: '', kategori: 'Makanan', gambar: null });
@@ -57,8 +70,96 @@ const KelolaProduk = () => {
     p.namaProduk.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Camera handlers
+  const startCamera = async (facing = 'environment') => {
+    setCameraError('');
+    setIsCameraOpen(true);
+    setCameraFacing(facing);
+
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+    }
+
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Kamera langsung tidak didukung di browser ini. Silakan gunakan tombol Buka Kamera HP.');
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: facing, width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      });
+      setCameraStream(stream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (err) {
+      console.error('Error accessing camera:', err);
+      let errMsg = 'Gagal mengakses kamera. Pastikan izin kamera telah diberikan di browser.';
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        errMsg = 'Izin kamera ditolak. Silakan izinkan akses kamera di pengaturan browser.';
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        errMsg = 'Perangkat kamera tidak ditemukan.';
+      }
+      setCameraError(errMsg);
+    }
+  };
+
+  const stopCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    setIsCameraOpen(false);
+    setCameraError('');
+  };
+
+  const switchCamera = () => {
+    const nextFacing = cameraFacing === 'environment' ? 'user' : 'environment';
+    startCamera(nextFacing);
+  };
+
+  const capturePhoto = () => {
+    if (!videoRef.current) return;
+    const video = videoRef.current;
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        setFormError('Gagal memproses gambar dari kamera');
+        return;
+      }
+      const fileName = `foto-produk-${Date.now()}.jpg`;
+      const file = new File([blob], fileName, { type: 'image/jpeg' });
+      setFormData(prev => ({ ...prev, gambar: file }));
+      setPreviewUrl(URL.createObjectURL(file));
+      setFormError('');
+      stopCamera();
+    }, 'image/jpeg', 0.9);
+  };
+
+  // Cleanup camera stream
+  useEffect(() => {
+    return () => {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [cameraStream]);
+
+  // Attach video stream when modal opened
+  useEffect(() => {
+    if (videoRef.current && cameraStream) {
+      videoRef.current.srcObject = cameraStream;
+    }
+  }, [cameraStream, isCameraOpen]);
+
   // Open Add Modal
   const handleAdd = () => {
+    stopCamera();
     setEditingProduk(null);
     setFormData({ namaProduk: '', harga: '', hargaModal: '', stok: '', kategori: 'Makanan', gambar: null });
     setPreviewUrl(null);
@@ -68,6 +169,7 @@ const KelolaProduk = () => {
 
   // Open Edit Modal
   const handleEdit = (produk) => {
+    stopCamera();
     setEditingProduk(produk);
     setFormData({
       namaProduk: produk.namaProduk,
@@ -133,16 +235,17 @@ const KelolaProduk = () => {
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
         setFormError('Ukuran gambar maksimal 5MB');
         return;
       }
-      setFormData({ ...formData, gambar: file });
+      setFormData(prev => ({ ...prev, gambar: file }));
       setPreviewUrl(URL.createObjectURL(file));
       setFormError('');
     }
+    if (e.target) e.target.value = '';
   };
 
   // Execute Deactivation (Soft Delete)
@@ -410,31 +513,119 @@ const KelolaProduk = () => {
             onChange={(e) => setFormData({ ...formData, namaProduk: e.target.value })}
           />
           
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-dark block">Gambar Produk (Opsional)</label>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-semibold text-dark">Foto Produk (Opsional)</label>
+              <span className="text-[11px] text-gray-400">Maks. 5MB</span>
+            </div>
+
+            {/* Hidden Inputs */}
+            {/* 1. Native mobile camera input (langsung buka kamera HP saat disentuh) */}
+            <input
+              type="file"
+              ref={nativeCameraInputRef}
+              accept="image/*"
+              capture="environment"
+              onChange={handleImageChange}
+              className="hidden"
+            />
+            {/* 2. Gallery / file picker input */}
+            <input
+              type="file"
+              ref={galleryInputRef}
+              accept="image/png, image/jpeg, image/webp"
+              onChange={handleImageChange}
+              className="hidden"
+            />
+
             {previewUrl ? (
-              <div className="relative w-max">
-                <img src={previewUrl} alt="Preview" className="w-32 h-32 object-cover rounded-xl border border-gray-200" />
-                <button
-                  type="button"
-                  onClick={() => { setPreviewUrl(null); setFormData({ ...formData, gambar: null }) }}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
-                >
-                  <X size={14} />
-                </button>
+              <div className="p-3 bg-gray-50 border border-gray-200 rounded-2xl flex items-center gap-3.5">
+                <div className="relative shrink-0">
+                  <img 
+                    src={previewUrl} 
+                    alt="Preview Produk" 
+                    className="w-20 h-20 object-cover rounded-xl border border-gray-200 shadow-2xs" 
+                  />
+                  <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center shadow-xs">
+                    <Check size={12} strokeWidth={3} />
+                  </div>
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <span className="text-xs font-bold text-gray-800 block truncate">
+                    {formData.gambar?.name || 'Foto Produk Terpasang'}
+                  </span>
+                  <span className="text-[11px] text-emerald-600 font-medium block mt-0.5">
+                    ✓ Siap disimpan ke katalog
+                  </span>
+
+                  {/* Tombol ganti/ambil ulang */}
+                  <div className="flex items-center gap-2 mt-2 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => nativeCameraInputRef.current?.click()}
+                      className="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:text-primary/80 bg-primary/10 px-2 py-1 rounded-md transition-colors cursor-pointer"
+                      title="Ambil foto ulang menggunakan kamera HP"
+                    >
+                      <Camera size={12} /> Kamera HP
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => galleryInputRef.current?.click()}
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-gray-600 hover:text-gray-900 bg-gray-200/80 px-2 py-1 rounded-md transition-colors cursor-pointer"
+                      title="Pilih foto lain dari galeri"
+                    >
+                      <Upload size={12} /> Galeri
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setPreviewUrl(null); setFormData({ ...formData, gambar: null }); }}
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-red-500 hover:text-red-700 hover:underline cursor-pointer"
+                    >
+                      <X size={12} /> Hapus
+                    </button>
+                  </div>
+                </div>
               </div>
             ) : (
-              <div className="w-full relative">
-                <input
-                  type="file"
-                  accept="image/png, image/jpeg, image/webp"
-                  onChange={handleImageChange}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                />
-                <div className="w-full p-4 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50 flex flex-col items-center justify-center text-gray-400 hover:border-primary/50 hover:bg-primary/5 transition-colors cursor-pointer">
-                  <Upload size={24} className="mb-2" />
-                  <span className="text-sm font-medium">Klik untuk unggah gambar</span>
-                  <span className="text-xs opacity-70 mt-1">Maks 5MB (JPG, PNG, WEBP)</span>
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2.5">
+                  {/* TOMBOL 1: AMBIL FOTO LANGSUNG DARI KAMERA HP */}
+                  <button
+                    type="button"
+                    onClick={() => nativeCameraInputRef.current?.click()}
+                    className="p-3.5 border-2 border-dashed border-primary/40 rounded-xl bg-primary/5 hover:bg-primary/10 hover:border-primary transition-all flex flex-col items-center justify-center text-center cursor-pointer group active:scale-98"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-primary/15 text-primary flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform shadow-2xs">
+                      <Camera size={20} />
+                    </div>
+                    <span className="text-xs font-black text-primary">Kamera HP</span>
+                    <span className="text-[10px] text-gray-500 mt-0.5 leading-tight">Ambil Foto Langsung</span>
+                  </button>
+
+                  {/* TOMBOL 2: PILIH DARI GALERI */}
+                  <button
+                    type="button"
+                    onClick={() => galleryInputRef.current?.click()}
+                    className="p-3.5 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50 hover:bg-gray-100 hover:border-gray-300 transition-all flex flex-col items-center justify-center text-center cursor-pointer group active:scale-98"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform shadow-2xs">
+                      <Upload size={18} />
+                    </div>
+                    <span className="text-xs font-bold text-gray-700">Pilih Galeri</span>
+                    <span className="text-[10px] text-gray-400 mt-0.5 leading-tight">Album / File HP</span>
+                  </button>
+                </div>
+
+                {/* Alternatif Live Viewfinder Kamera (Webcam / Layar) */}
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={() => startCamera('environment')}
+                    className="text-[11px] font-semibold text-primary/80 hover:text-primary hover:underline inline-flex items-center gap-1 cursor-pointer"
+                  >
+                    <Smartphone size={12} /> Buka Bidikan Kamera Layar (Live Screen)
+                  </button>
                 </div>
               </div>
             )}
@@ -512,6 +703,110 @@ const KelolaProduk = () => {
             <Button variant="primary" className="flex-1" isLoading={isSaving} onClick={handleDelete}>
               Ya, Nonaktifkan
             </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Live Camera Modal (Webcam / Viewfinder) */}
+      <Modal
+        isOpen={isCameraOpen}
+        onClose={stopCamera}
+        title="Bidikan Kamera Langsung"
+        size="md"
+      >
+        <div className="space-y-4">
+          {cameraError ? (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-center space-y-3">
+              <AlertTriangle className="w-8 h-8 text-red-500 mx-auto" />
+              <p className="text-sm font-semibold text-red-700">{cameraError}</p>
+              <div className="flex gap-2 justify-center pt-2">
+                <Button 
+                  size="sm" 
+                  variant="primary"
+                  onClick={() => {
+                    stopCamera();
+                    nativeCameraInputRef.current?.click();
+                  }}
+                >
+                  Buka Kamera Bawaan HP
+                </Button>
+                <Button size="sm" variant="outline" onClick={stopCamera}>
+                  Batal
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="relative rounded-2xl overflow-hidden bg-black aspect-video sm:aspect-4/3 flex items-center justify-center shadow-inner">
+              <video 
+                ref={videoRef} 
+                autoPlay 
+                playsInline 
+                muted
+                className="w-full h-full object-cover"
+              />
+
+              {/* Grid overlay for framing */}
+              <div className="absolute inset-0 pointer-events-none border border-white/20 grid grid-cols-3 grid-rows-3">
+                <div className="border-r border-b border-white/10" />
+                <div className="border-r border-b border-white/10" />
+                <div className="border-b border-white/10" />
+                <div className="border-r border-b border-white/10" />
+                <div className="border-r border-b border-white/10" />
+                <div className="border-b border-white/10" />
+                <div className="border-r border-b border-white/10" />
+                <div className="border-r border-b border-white/10" />
+                <div />
+              </div>
+
+              {/* Controls */}
+              <div className="absolute bottom-4 inset-x-0 flex items-center justify-center gap-6 px-4">
+                {/* Switch Camera */}
+                <button
+                  type="button"
+                  onClick={switchCamera}
+                  className="w-11 h-11 rounded-full bg-black/60 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/80 transition-all border border-white/20 active:scale-95 cursor-pointer"
+                  title="Ganti Kamera Depan / Belakang"
+                >
+                  <RefreshCw size={18} />
+                </button>
+
+                {/* Shutter Button */}
+                <button
+                  type="button"
+                  onClick={capturePhoto}
+                  className="w-16 h-16 rounded-full bg-white p-1 shadow-lg active:scale-90 transition-all cursor-pointer flex items-center justify-center group"
+                  title="Jepret Foto Sekarang"
+                >
+                  <div className="w-full h-full rounded-full border-2 border-primary group-hover:bg-primary/10 transition-colors flex items-center justify-center">
+                    <Camera size={26} className="text-primary" />
+                  </div>
+                </button>
+
+                {/* Cancel Button */}
+                <button
+                  type="button"
+                  onClick={stopCamera}
+                  className="w-11 h-11 rounded-full bg-black/60 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/80 transition-all border border-white/20 active:scale-95 cursor-pointer"
+                  title="Batal"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between text-xs text-gray-400 px-1">
+            <span>Arahkan ke produk lalu tekan tombol kamera</span>
+            <button
+              type="button"
+              onClick={() => {
+                stopCamera();
+                nativeCameraInputRef.current?.click();
+              }}
+              className="text-primary font-semibold hover:underline cursor-pointer"
+            >
+              Gunakan Kamera Bawaan HP
+            </button>
           </div>
         </div>
       </Modal>

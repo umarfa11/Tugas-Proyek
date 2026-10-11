@@ -7,13 +7,13 @@ const upload = require('../middlewares/uploadMiddleware');
 // Get all - accessible by public (pelanggan online), kasir & super_admin
 router.get('/', produkController.getAllProduk);
 
-// Get deactivated products - only accessible by super_admin
-router.get('/deactivated', verifyToken, verifyRole(['super_admin']), produkController.getDeactivatedProduk);
+// Get deactivated products - accessible by super_admin & kasir
+router.get('/deactivated', verifyToken, verifyRole(['super_admin', 'kasir']), produkController.getDeactivatedProduk);
 
-// Create, Update, Delete, Restore - only accessible by super_admin
-router.post('/', verifyToken, verifyRole(['super_admin']), upload.single('gambar'), produkController.createProduk);
-router.post('/:id/restore', verifyToken, verifyRole(['super_admin']), produkController.restoreProduk);
-router.put('/:id', verifyToken, verifyRole(['super_admin']), upload.single('gambar'), produkController.updateProduk);
-router.delete('/:id', verifyToken, verifyRole(['super_admin']), produkController.deleteProduk);
+// Create, Update, Delete, Restore - accessible by super_admin & kasir
+router.post('/', verifyToken, verifyRole(['super_admin', 'kasir']), upload.single('gambar'), produkController.createProduk);
+router.post('/:id/restore', verifyToken, verifyRole(['super_admin', 'kasir']), produkController.restoreProduk);
+router.put('/:id', verifyToken, verifyRole(['super_admin', 'kasir']), upload.single('gambar'), produkController.updateProduk);
+router.delete('/:id', verifyToken, verifyRole(['super_admin', 'kasir']), produkController.deleteProduk);
 
 module.exports = router;

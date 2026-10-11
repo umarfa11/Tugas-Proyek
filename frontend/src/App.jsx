@@ -55,7 +55,7 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path="/admin/produk" element={
-          <ProtectedRoute allowedRoles={['super_admin']}>
+          <ProtectedRoute allowedRoles={['super_admin', 'kasir']}>
             <AdminLayout><KelolaProduk /></AdminLayout>
           </ProtectedRoute>
         } />
@@ -94,6 +94,11 @@ function App() {
         <Route path="/kasir/antrian" element={
           <ProtectedRoute allowedRoles={['kasir']}>
             <AdminLayout><MonitorAntrian /></AdminLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/kasir/produk" element={
+          <ProtectedRoute allowedRoles={['kasir', 'super_admin']}>
+            <AdminLayout><KelolaProduk /></AdminLayout>
           </ProtectedRoute>
         } />
 

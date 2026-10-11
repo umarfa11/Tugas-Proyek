@@ -37,6 +37,7 @@ const Sidebar = () => {
   const kasirLinks = [
     { to: '/kasir', label: 'Kasir POS', icon: Store },
     { to: '/kasir/antrian', label: 'Monitor Antrian', icon: ListOrdered },
+    { to: '/kasir/produk', label: 'Kelola Produk', icon: Soup },
   ];
 
   const links = user?.role === 'super_admin' ? adminLinks : kasirLinks;
