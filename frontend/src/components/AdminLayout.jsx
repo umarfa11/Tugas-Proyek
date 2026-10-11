@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
-import { WifiOff, Wifi, Download, CheckCircle2 } from 'lucide-react';
+import { WifiOff, Wifi, Download, CheckCircle2, ChefHat } from 'lucide-react';
 import { usePWAStatus } from '../services/pwaService';
 
 const AdminLayout = ({ children }) => {
@@ -37,9 +37,9 @@ const AdminLayout = ({ children }) => {
 
       {/* Mobile Topbar */}
       <div className="lg:hidden bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-black text-sm">
-            B
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+            <ChefHat size={18} />
           </div>
           <div>
             <h1 className="font-bold text-dark text-sm tracking-tight leading-tight">KASIR BAKSOKU</h1>

@@ -98,20 +98,44 @@ Tugas-Proyek/
 ├── backend/
 │   ├── prisma/             # Schema & Seed Prisma ORM
 │   ├── src/
-│   │   ├── config/         # Konfigurasi database
+│   │   ├── config/         # Konfigurasi database & Cloudinary
 │   │   ├── controllers/    # Logika bisnis endpoint API
-│   │   ├── middlewares/    # Proteksi hak akses token JWT
+│   │   ├── middlewares/    # Proteksi hak akses token JWT & upload
 │   │   ├── routes/         # Pemetaan rute URL API
 │   │   └── server.js       # Entry point Express backend
 │   └── package.json
 ├── frontend/
-│   ├── public/             # Aset gambar login & ikon static
+│   ├── public/             # Aset manifest PWA & ikon statis
 │   ├── src/
 │   │   ├── assets/         # Aset lokal ilustrasi
-│   │   ├── components/     # Komponen UI bersama (Sidebar, Layout, Struk)
-│   │   ├── pages/          # Halaman utama aplikasi (POS, Dashboard, Inventory)
-│   │   ├── services/       # Integrasi API Axios
-│   │   └── store/          # Zustand auth state
+│   │   ├── components/     # Komponen UI bersama (Sidebar, Layout, Struk, UI atoms)
+│   │   ├── pages/          # Halaman utama aplikasi (POS, Dashboard, Monitor Antrian, dll.)
+│   │   ├── services/       # Integrasi API Axios & PWA Service
+│   │   └── store/          # Zustand auth state persist
 │   └── package.json
+├── docs/                   # Dokumen teknis, analisis, dan rancangan fitur
+├── DOKUMENTASI_APLIKASI.md # Master blueprint arsitektur & panduan menambah fitur
 └── README.md
 ```
+
+---
+
+## 📖 Dokumentasi Arsitektur & Panduan Pengembangan Fitur
+
+Untuk panduan teknis mendalam mengenai cara kerja sistem dan **SOP resmi penambahan fitur baru**, silakan buka berkas dokumentasi lengkap:
+
+👉 **[DOKUMENTASI_APLIKASI.md](DOKUMENTASI_APLIKASI.md)**
+
+Dokumen tersebut mencakup:
+1. **Arsitektur & Diagram ERD** (Relasi entitas Prisma, enums, & indexing).
+2. **Katalog REST API Lengkap** (Rute, payload request, & hak akses role).
+3. **Logika Transaksi Atomik** (`prisma.$transaction`) dan **Algoritma FIFO Antrean Dapur**.
+4. **SOP 7 Langkah Menambahkan Fitur Baru** (Prisma DB $\rightarrow$ Backend Controller $\rightarrow$ Routes $\rightarrow$ Axios API Service $\rightarrow$ UI Component $\rightarrow$ Route & Role Guard).
+5. **Katalog Rancangan Fitur Baru (Backlog)** yang siap dikembangkan:
+   - 🛡️ *Modul Log Aktivitas / Audit Trail*
+   - 🪑 *Sistem Meja & Tipe Pesanan (Dine-In vs Take-Away)*
+   - 🏷️ *Diskon, Voucher Promo & Potongan Belanja*
+   - 🔔 *Panggilan Suara / Audio Bell Antrean Dapur (Text-to-Speech)*
+   - 📦 *Manajemen Stok Bahan Baku (Raw Material Inventory)*
+   - 💳 *Multi-Metode Pembayaran & QRIS Dinamis*
+

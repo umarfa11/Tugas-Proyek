@@ -1,7 +1,7 @@
 const prisma = require('../config/db');
 const fs = require('fs');
 const path = require('path');
-const cloudinary = require('cloudinary').v2;
+const cloudinary = require('../config/cloudinary');
 
 // Fungsi bantuan untuk mengekstrak public_id dari URL Cloudinary
 const extractPublicId = (url) => {
@@ -19,7 +19,7 @@ const cleanupDeactivatedProducts = async () => {
   try {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
+
     // Find all products that have been deactivated for more than 30 days
     const productsToDelete = await prisma.produk.findMany({
       where: {
@@ -39,12 +39,12 @@ const cleanupDeactivatedProducts = async () => {
         await prisma.produk.delete({
           where: { id: item.id }
         });
-        
+
         if (item.gambar && item.gambar.includes('cloudinary')) {
-           const publicId = extractPublicId(item.gambar);
-           if (publicId) {
-             await cloudinary.uploader.destroy(publicId);
-           }
+          const publicId = extractPublicId(item.gambar);
+          if (publicId) {
+            await cloudinary.uploader.destroy(publicId);
+          }
         }
         console.log(`[CLEANUP] Product ID ${item.id} permanently deleted.`);
       } catch (err) {
@@ -93,7 +93,7 @@ const getDeactivatedProduk = async (req, res) => {
 const createProduk = async (req, res) => {
   try {
     const { namaProduk, harga, hargaModal, stok, kategori } = req.body;
-    
+
     if (!namaProduk || harga == null || stok == null || !kategori) {
       return res.status(400).json({ message: 'All fields are required' });
     }
@@ -142,14 +142,14 @@ const updateProduk = async (req, res) => {
     if (req.file) {
       dataToUpdate.gambar = req.file.path; // URL dari Cloudinary
       if (existing.gambar && existing.gambar.includes('cloudinary')) {
-         const publicId = extractPublicId(existing.gambar);
-         if (publicId) await cloudinary.uploader.destroy(publicId);
+        const publicId = extractPublicId(existing.gambar);
+        if (publicId) await cloudinary.uploader.destroy(publicId);
       }
     } else if (req.body.removeImage === 'true') {
       dataToUpdate.gambar = null;
       if (existing.gambar && existing.gambar.includes('cloudinary')) {
-         const publicId = extractPublicId(existing.gambar);
-         if (publicId) await cloudinary.uploader.destroy(publicId);
+        const publicId = extractPublicId(existing.gambar);
+        if (publicId) await cloudinary.uploader.destroy(publicId);
       }
     }
 
