@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Plus, Pencil, Trash2, Search, Soup, AlertTriangle, RotateCcw, Bell, 
-  Image as ImageIcon, Upload, X, ChevronDown, ChevronUp, Camera, 
+  Plus, Pencil, Trash2, Search, Soup, AlertTriangle, 
+  Image as ImageIcon, Upload, X, Camera, 
   RefreshCw, Check, Smartphone
 } from 'lucide-react';
 import Button from '../components/ui/Button';
@@ -11,7 +11,6 @@ import api from '../services/api';
 
 const KelolaProduk = () => {
   const [produkList, setProdukList] = useState([]);
-  const [deactivatedProduk, setDeactivatedProduk] = useState([]);
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -21,7 +20,6 @@ const KelolaProduk = () => {
   const [editingProduk, setEditingProduk] = useState(null);
   const [deletingProduk, setDeletingProduk] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [isArsipOpen, setIsArsipOpen] = useState(false);
 
   // Camera & Image states
   const [isCameraOpen, setIsCameraOpen] = useState(false);
@@ -50,19 +48,8 @@ const KelolaProduk = () => {
     }
   };
 
-  // Fetch deactivated products
-  const fetchDeactivated = async () => {
-    try {
-      const res = await api.get('/produk/deactivated');
-      setDeactivatedProduk(res.data);
-    } catch (err) {
-      console.error('Error fetching deactivated products:', err);
-    }
-  };
-
   useEffect(() => {
     fetchProduk();
-    fetchDeactivated();
   }, []);
 
   // Filter by search
@@ -255,24 +242,11 @@ const KelolaProduk = () => {
       await api.delete(`/produk/${deletingProduk.id}`);
       setIsDeleteOpen(false);
       fetchProduk();
-      fetchDeactivated();
     } catch (err) {
       console.error(err);
       alert(err.response?.data?.message || 'Gagal menonaktifkan produk');
     } finally {
       setIsSaving(false);
-    }
-  };
-
-  // Restore Product
-  const handleRestore = async (id) => {
-    try {
-      await api.post(`/produk/${id}/restore`);
-      fetchProduk();
-      fetchDeactivated();
-    } catch (err) {
-      console.error('Error restoring product:', err);
-      alert(err.response?.data?.message || 'Gagal memulihkan produk');
     }
   };
 
@@ -316,62 +290,6 @@ const KelolaProduk = () => {
               </div>
             )}
           </div>
-        </div>
-      )}
-
-      {/* Deactivated Products Notification (Soft Delete) */}
-      {deactivatedProduk.length > 0 && (
-        <div className="mb-6 rounded-xl bg-red-50 border border-red-200 shadow-sm animate-fade-in transition-all overflow-hidden">
-          <div 
-            className="flex items-center justify-between p-4 cursor-pointer hover:bg-red-100/50 transition-colors"
-            onClick={() => setIsArsipOpen(!isArsipOpen)}
-          >
-            <div className="flex items-center gap-3">
-              <Bell size={20} className="text-red-500 shrink-0" />
-              <h3 className="text-sm font-bold text-red-800">
-                Notifikasi Produk Dinonaktifkan ({deactivatedProduk.length} Arsip)
-              </h3>
-            </div>
-            {isArsipOpen ? (
-              <ChevronUp size={20} className="text-red-500" />
-            ) : (
-              <ChevronDown size={20} className="text-red-500" />
-            )}
-          </div>
-
-          {isArsipOpen && (
-            <div className="px-4 pb-4 border-t border-red-100/50 pt-3">
-              <div className="text-sm text-red-700 space-y-2">
-                <p>Produk berikut disembunyikan dari POS/Inventory dan akan dihapus permanen setelah 30 hari:</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
-                {deactivatedProduk.map(p => {
-                  // Calculate remaining days
-                  const deactDate = new Date(p.deactivatedAt);
-                  const expiryDate = new Date(deactDate.getTime() + 30 * 24 * 60 * 60 * 1000);
-                  const diffTime = expiryDate.getTime() - new Date().getTime();
-                  const diffDays = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-                  
-                  return (
-                    <div key={p.id} className="flex items-center justify-between bg-white/60 p-3 rounded-lg border border-red-100">
-                      <div>
-                        <p className="font-semibold text-gray-800">{p.namaProduk}</p>
-                        <p className="text-xs text-red-500 font-medium">Hapus otomatis dalam {diffDays} hari</p>
-                      </div>
-                      <Button
-                        size="sm"
-                        onClick={() => handleRestore(p.id)}
-                        className="py-1.5 px-3 text-xs bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white flex items-center gap-1 shadow-sm border-transparent"
-                      >
-                        <RotateCcw size={12} />
-                        Pulihkan
-                      </Button>
-                    </div>
-                  );
-                })}
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       )}
 
