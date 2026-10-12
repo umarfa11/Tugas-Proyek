@@ -8,6 +8,7 @@ import {
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import Modal from '../components/ui/Modal';
+import ThemeToggle from '../components/ThemeToggle';
 import api from '../services/api';
 
 const OrderOnline = () => {
@@ -231,8 +232,10 @@ const OrderOnline = () => {
             </div>
           </div>
 
-          {/* Customer Profile & Cart Button (Uniform Height h-10) */}
+          {/* Customer Profile & Cart Button & Theme Toggle (Uniform Height h-10) */}
           <div className="flex items-center gap-2 shrink-0">
+            <ThemeToggle variant="compact" />
+
             {customerName ? (
               <button 
                 onClick={handleOpenIdentityModal}

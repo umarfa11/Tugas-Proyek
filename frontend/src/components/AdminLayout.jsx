@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
+import ThemeToggle from './ThemeToggle';
 import { WifiOff, Wifi, Download, CheckCircle2, ChefHat } from 'lucide-react';
 import { usePWAStatus } from '../services/pwaService';
 
@@ -47,16 +48,19 @@ const AdminLayout = ({ children }) => {
           </div>
         </div>
 
-        {/* PWA Install Button Mobile */}
-        {isInstallable && (
-          <button
-            onClick={installPWA}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded-xl text-xs font-semibold shadow-sm hover:bg-primary/90 transition-all"
-          >
-            <Download size={13} />
-            <span>Install App</span>
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          <ThemeToggle variant="compact" />
+          {/* PWA Install Button Mobile */}
+          {isInstallable && (
+            <button
+              onClick={installPWA}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded-xl text-xs font-semibold shadow-sm hover:bg-primary/90 transition-all cursor-pointer"
+            >
+              <Download size={13} />
+              <span>Install</span>
+            </button>
+          )}
+        </div>
       </div>
 
       <Sidebar />

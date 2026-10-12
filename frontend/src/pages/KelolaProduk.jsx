@@ -9,6 +9,7 @@ import Input from '../components/ui/Input';
 import Modal from '../components/ui/Modal';
 import api from '../services/api';
 
+// Modul Kelola Produk (Hanya produk aktif; produk deaktif ada di menu Produk Deaktif)
 const KelolaProduk = () => {
   const [produkList, setProdukList] = useState([]);
   const [search, setSearch] = useState('');

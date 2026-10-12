@@ -14,6 +14,7 @@ import {
   Smartphone
 } from 'lucide-react';
 import useAuthStore from '../store/authStore';
+import ThemeToggle from './ThemeToggle';
 
 const Sidebar = () => {
   const { user, logout } = useAuthStore();
@@ -81,10 +82,15 @@ const Sidebar = () => {
           </NavLink>
         ))}
 
+        {/* Theme Toggle - Mobile Only */}
+        <div className="lg:hidden flex items-center px-2 shrink-0">
+          <ThemeToggle variant="compact" />
+        </div>
+
         {/* Logout - Mobile Only */}
         <button 
           onClick={handleLogout}
-          className="lg:hidden flex flex-col items-center justify-center min-w-[76px] shrink-0 gap-1.5 px-3 py-2 text-[11px] font-medium text-red-500 hover:text-red-600 transition-colors"
+          className="lg:hidden flex flex-col items-center justify-center min-w-[76px] shrink-0 gap-1.5 px-3 py-2 text-[11px] font-medium text-red-500 hover:text-red-600 transition-colors cursor-pointer"
         >
           <LogOut className="w-5 h-5 shrink-0" />
           <span>Keluar</span>
@@ -92,7 +98,11 @@ const Sidebar = () => {
       </nav>
 
       {/* User Info & Logout - Desktop Only */}
-      <div className="hidden lg:block p-4 pb-8 sm:pb-4 border-t border-gray-100">
+      <div className="hidden lg:block p-4 pb-8 sm:pb-4 border-t border-gray-100 dark:border-slate-800">
+        <div className="mb-3">
+          <ThemeToggle variant="segmented" />
+        </div>
+
         <a 
           href="/order" 
           target="_blank" 

@@ -4,7 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import {
-  Soup, ShoppingCart, ListOrdered, History, ArrowRight, TrendingUp, DollarSign, Activity, ChevronDown, SlidersHorizontal
+  Soup, ShoppingCart, ListOrdered, History, ArrowRight, TrendingUp, DollarSign, Activity, ChevronDown
 } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 import api from '../services/api';
@@ -178,14 +178,6 @@ const Dashboard = () => {
           <p className="text-sm text-gray-500">
             Ringkasan performa dan aktivitas Kasir Baksoku hari ini
           </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button className="px-4 py-2 bg-white border border-gray-200 text-dark rounded-full text-sm font-medium hover:bg-gray-50 transition-colors flex items-center gap-2">
-            Hari Ini <ChevronDown size={16} className="text-gray-400" />
-          </button>
-          <button className="px-4 py-2 bg-primary text-white rounded-full text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-2 shadow-sm shadow-primary/30">
-            <SlidersHorizontal size={16} /> Filter
-          </button>
         </div>
       </div>
 
